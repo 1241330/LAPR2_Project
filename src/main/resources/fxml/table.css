@@ -1,0 +1,139 @@
+/* ---------- TABLE VIEW ---------- */
+.table-view {
+    -fx-background-color: #f3efe7;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+    -fx-table-cell-border-color: transparent;
+    -fx-selection-bar: #b39a6f;
+    -fx-selection-bar-non-focused: #b39a6f;
+    -fx-selection-bar-text: white;
+}
+
+/* ---------- CABEÇALHO ---------- */
+.table-view .column-header-background {
+    -fx-background-color: #8C7853;
+    -fx-background-radius: 10 10 0 0;
+    -fx-padding: 6;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+    -fx-alignment: CENTER;
+
+}
+
+.table-view .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-padding: 0 6 0 6;
+}
+
+.table-cell {
+    -fx-padding: 6 8;
+    -fx-font-size: 13px;
+    -fx-text-fill: #3E2723;
+    -fx-background-color: transparent;
+}
+
+.table-row-cell:even {
+    -fx-background-color: #f3efe7;
+}
+.table-row-cell:odd {
+    -fx-background-color: #ece3d4;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #b39a6f;
+}
+.table-row-cell:selected .table-cell {
+    -fx-text-fill: white;
+}
+.table-row-cell:selected .text {
+    -fx-fill: white;
+}
+
+.table-row-cell:hover {
+    -fx-border-color: #b39a6f;
+    -fx-border-width: 0 0 0 2;
+}
+
+
+.table-view .filler {
+    -fx-background-color: transparent;
+}
+
+
+.table-view .scroll-bar:vertical,
+.table-view .scroll-bar:horizontal {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    -fx-max-width: 0;
+    -fx-max-height: 0;
+    -fx-min-width: 0;
+    -fx-min-height: 0;
+}
+
+.table-view .virtual-flow {
+    -fx-background-radius: 0 0 10 10;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+
+
+/* ---------- LISTVIEW ELEGANTE ---------- */
+.list-view {
+    -fx-background-color: #f3efe7;
+    -fx-border-color: #8C7853;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 6;
+    -fx-control-inner-background: #f3efe7;
+}
+
+/* ---------- ITENS ---------- */
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #3E2723;
+    -fx-font-size: 13px;
+    -fx-padding: 8 12;
+    -fx-border-radius: 6;
+}
+
+/* HOVER */
+.list-cell:hover {
+    -fx-background-color: #e0d6c8;
+}
+
+/* SELECIONADO */
+.list-cell:selected {
+    -fx-background-color: #b39a6f;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+/* ---------- SCROLLBAR MAIS SUAVE ---------- */
+.list-view .scroll-bar:horizontal,
+.list-view .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-pref-width: 8;
+    -fx-pref-height: 8;
+}
+
+.list-view .thumb {
+    -fx-background-color: #a68c65;
+    -fx-background-insets: 0;
+    -fx-background-radius: 4;
+}
+
+/* ---------- REMOVER BORDAS E CLIPPING DENTRO ---------- */
+.list-view .virtual-flow {
+    -fx-background-color: transparent;
+}

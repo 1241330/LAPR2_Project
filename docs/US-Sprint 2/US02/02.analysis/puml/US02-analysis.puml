@@ -1,0 +1,51 @@
+@startuml
+hide circle
+hide methods
+
+
+title: Relevant Domain Model Excerpt - US02 - Add an Industry
+
+class Editor {
+   username: Text
+   password: Text
+}
+
+class Map {
+   name: Text
+}
+
+class Size {
+   width: Integer
+   height: Integer
+}
+
+class Industry {
+   name: Text
+   IndustryType: Type
+}
+
+class Position {
+   Xposition: Integer
+   Yposition: Integer
+}
+
+class IndustryType {
+    PrimarySectorIndustry
+    TransformingIndustry
+    MixedIndustry
+}
+class Cargo {
+    cargoType: Text
+}
+
+Editor "1" -- "1..*" Map : creates/edits >
+
+Map "*" -- "1" Size : has >
+Map "*" -- "1..*" Position : has >
+Map "*" - "*" Industry : has >
+
+Industry "0,1" -- "1" Position : has >
+Industry "*" -- "1" IndustryType : has >
+Industry "*" - "*" Cargo : produces >
+
+@enduml

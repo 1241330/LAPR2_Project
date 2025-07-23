@@ -1,0 +1,73 @@
+@startuml
+'skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+'skinparam linetype orto
+skinparam classAttributeIconSize 0
+
+'left to right direction
+
+class CreateMapUI{
+    - controller: CreateMapController
+    - nameMap: String
+    - defaultNameMap: boolean
+    -aNameMap(): void
+    - enterDefaultNameMap(): void
+}
+
+class CreateMapController {
+    - mapRepository: MapRepository
+    - map: Map
+
+    + CreateMapController()
+    - getMapRepository(): void
+    + createMap(name: String, width: int, height: int): void
+    + createMapDefault(width: int, height: int): void
+    + getMapCreated(): Map
+}
+
+class Repositories {
+    + {static} getInstance(): Repositories
+    + getMapRepository(): MapRepository
+    - mapRepository: MapRepository
+    ...()
+}
+
+class Size{
+    + Size(width: int, height: int)
+    - width: int
+    - height: int
+    ...()
+}
+
+class Map{
+   + Map(name: String, size: Size)
+   - name: String
+   - size: Size
+    - id: int
+   - mapElementsUsed: List<MapElement>
+   - occupiedPositions: List<Position>
+   - counterCreatedMaps: int
+    ...()
+}
+
+class MapRepository {
+    + addMap(map: Map): void
+    - maps: List<Map>
+    ...()
+}
+
+
+CreateMapUI .> CreateMapController
+
+CreateMapController -.> Repositories
+CreateMapController .> Map
+CreateMapController -.> MapRepository
+CreateMapController .> Size
+
+Repositories -> "1" Repositories: instance
+
+@enduml
+
+

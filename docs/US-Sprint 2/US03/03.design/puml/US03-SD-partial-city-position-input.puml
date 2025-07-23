@@ -1,0 +1,91 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+autonumber
+
+actor "Editor" as EDT
+participant ":AddCityUI" as UI
+participant ":AddCityController" as CTRL
+participant "actualMap\n:Map" as MAP
+participant "sizeMap\n:Size" as SIZE
+participant "position\n:Position" as POS
+participant "mapElement\n:MapElement" as MAP_ELEM
+
+activate EDT
+activate UI
+loop until city position is valid
+    loop until valid X value
+        UI --> EDT : ask for city X position
+        EDT -> UI : enter X
+        UI -> CTRL : getWidthMap()
+        activate CTRL
+            CTRL -> MAP : getSize()
+            activate MAP
+                MAP -> SIZE** : get map size
+                MAP --> CTRL : return mapSize
+            deactivate MAP
+            CTRL -> SIZE : getWidthMap()
+            activate SIZE
+                SIZE --> CTRL : return mapWidth
+            deactivate SIZE
+            CTRL --> UI : return mapWidth
+        deactivate CTRL
+        alt (0 < X < mapWidth)
+            UI -> UI : save X value
+        else
+            UI --> EDT : error message: invalid X value
+        end
+    end
+    loop until valid Y value
+        UI --> EDT : ask for city Y position
+        EDT -> UI : enter Y
+        UI -> CTRL : getHeightMap()
+        activate CTRL
+            CTRL -> MAP : getSize()
+            activate MAP
+                MAP -> SIZE : get map size
+                MAP --> CTRL : return mapSize
+            deactivate MAP
+            CTRL -> SIZE : getHeight()
+            activate SIZE
+                SIZE --> CTRL : return mapHeight
+            deactivate SIZE
+            CTRL --> UI : return mapHeight
+        deactivate CTRL
+        alt (0 < Y < mapHeight)
+            UI -> UI : save yValue
+        else
+            UI --> EDT : error message: invalid Y value
+        end
+    end
+    UI -> POS** : positionCity = new Position(X - 1,Y - 1)
+    UI -> CTRL : getOccupiedPositionsMap()
+    activate CTRL
+        CTRL -> MAP : getOccupiedPositions()
+        activate MAP
+            MAP -> MAP : listAllOccupiedPositions()
+            MAP -> MAP : occupiedPositions.clear()
+            loop for each mapElement in mapElementsUsed
+                MAP -> MAP_ELEM** : getOccupiedPositions()
+                activate MAP_ELEM
+                    MAP_ELEM --> MAP : List<Position> occupiedByElement
+                deactivate MAP_ELEM
+                MAP -> MAP : occupiedPositions.addAll(occupiedByElement)
+            end
+            MAP --> CTRL : return new ArrayList<>(occupiedPositions)
+        deactivate MAP
+        CTRL --> UI : return List<Position> occupiedPositions
+    deactivate CTRL
+    alt position occupied
+        UI --> EDT : Error message: Position already occupied
+    else
+        UI -> CTRL : setPositionCity(positionCity)
+        activate CTRL
+            CTRL -> CTRL : save positionCity
+            CTRL --> UI : city position accepted
+        deactivate CTRL
+    end
+end
+deactivate UI
+deactivate EDT
+@enduml

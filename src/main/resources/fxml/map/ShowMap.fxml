@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="rootAnchorPane" prefHeight="1080.0" prefWidth="1920.0" style="-fx-background-color: #8C7853;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pt.ipp.isep.dei.ui.gui.map.ShowMapGUI">
+    <stylesheets>
+        <URL value="@../buttons.css" />
+    </stylesheets>
+    <AnchorPane style="-fx-background-color: #fdfaf6;" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+
+        <children>
+
+            <Button layoutX="40.0" layoutY="20.0" onAction="#handleBackButtonOnAction" prefHeight="50.0" prefWidth="150.0" style="-fx-background-color: #8C7853; -fx-text-fill: white; -fx-font-size: 16px; -fx-background-radius: 10px; -fx-font-weight: bold;" text="🔙 Back">
+                <font>
+                    <Font name="Segoe UI Bold" size="16.0" />
+                </font>
+            </Button>
+
+                        <Label style="-fx-font-weight: bold; -fx-text-fill: #8C7853; -fx-font-size: 16px;" text="Scale: 1 cell = 1 km" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="40.0" />
+
+            <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" layoutX="40.0" layoutY="90.0" prefHeight="950.0" prefWidth="1840.0" style="-fx-background-color: #F5DEB3;" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="90.0"> <!-- Bege claro para tons castanhos -->
+
+                <content>
+                    <GridPane fx:id="mapGrid" style="-fx-background-color: white;" />
+                </content>
+            </ScrollPane>
+         <Label fx:id="actualPositionLabel" layoutX="640.0" layoutY="11.0" prefHeight="67.0" prefWidth="558.0" style="-fx-font-weight: bold; -fx-text-fill: #8C7853; -fx-font-size: 30;" text="Position">
+            <font>
+               <Font size="43.0" />
+            </font>
+         </Label>
+
+        </children>
+    </AnchorPane>
+</AnchorPane>

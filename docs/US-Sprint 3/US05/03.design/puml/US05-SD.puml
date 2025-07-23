@@ -1,0 +1,82 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Player" as PLY
+participant ":CreateStationUI" as UI
+participant ":CreateStationController" as CTRL
+participant "Repositories" as REPOS
+participant "mapRepository\n:MapRepository" as MAP_REP
+participant ":Map" as MAP
+participant "simulation\n:Simulation" as SIM
+participant "stationRepository\n:StationRepository" as ST_REP
+participant "station\n:Station" as ST
+
+
+activate PLY
+    PLY -> UI : start CreateStationUI(idMap, simulation)
+    activate UI
+        UI -> CTRL : CreateStationController(idMap, simulation)
+        activate CTRL
+
+        UI -> CTRL : selectStationType()
+        CTRL --> UI : stationType
+
+        UI -> CTRL : readStationPosition()
+        CTRL --> UI : position
+
+        alt type = STATION
+            UI -> CTRL : selectStationDirection()
+            CTRL --> UI : direction
+        end
+
+        ' Request suggested name
+        UI -> CTRL : requestSuggestedName(type, position, direction)
+        CTRL -> ST : new Station(type, position, idMap, direction)
+        activate ST
+        ST --> CTRL : suggestedName
+        deactivate ST
+        CTRL --> UI : suggestedName
+
+        UI --> PLY : show suggested name
+        PLY -> UI : accept or enter custom name
+
+        UI -> CTRL : createStation(type, position, direction, name, simulation)
+
+        ' Check for sufficient balance (if simulation exists)
+        CTRL -> SIM : getActualMoney()
+        activate SIM
+        SIM --> CTRL : actualMoney
+        deactivate SIM
+        CTRL -> CTRL : doYouHaveMoney(simulation, type)
+        alt insufficient balance
+            CTRL --> UI : error "Insufficient balance"
+        else sufficient balance
+            CTRL -> MAP_REP : getMapById(idMap)
+            activate MAP_REP
+            MAP_REP --> CTRL : Map
+            deactivate MAP_REP
+
+            CTRL -> MAP : addElement(station)
+            activate MAP
+            MAP -> ST_REP : addStation(station)
+            activate ST_REP
+            ST_REP --> MAP : addStation
+            deactivate ST_REP
+            MAP --> CTRL : addStation
+            deactivate MAP
+
+            alt success
+                CTRL --> UI : station created
+            else failure
+                CTRL --> UI : error (position occupied or name already exists)
+            end
+        end
+
+        UI --> PLY : show result
+        deactivate CTRL
+    deactivate UI
+deactivate PLY
+@enduml

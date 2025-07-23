@@ -1,0 +1,19 @@
+@startuml
+actor "Player" as PLY
+participant ":AddUpgradeStationUI" as UI
+participant ":AddUpgradeStationController" as CTRL
+
+autonumber
+activate PLY
+activate UI
+UI --> PLY : show available building options
+PLY -> UI : selects building type (or cancel)
+
+alt Cancel
+    UI --> PLY : operation cancelled
+else Invalid option
+    UI --> PLY : error message
+else Valid option
+    UI -> CTRL : addBuildingToStation(buildingType)
+end
+@enduml

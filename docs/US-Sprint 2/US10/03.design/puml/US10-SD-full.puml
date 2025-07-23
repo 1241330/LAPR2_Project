@@ -1,0 +1,105 @@
+@startuml
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+autonumber
+
+actor "Player" as PLAYER
+participant ":CreateRouteUI" as UI
+participant ":CreateRouteController" as CTRL
+participant "simulation\n:Simulation" as SIM
+participant "scenario\n:Scenario" as SCENARIO
+participant "map\n:Map" as MAP
+participant "stationRepository\n:StationRepository" as ST_REPO
+participant "railwayLineRepository\n:RailwayLineRepository" as RL_REPO
+participant "route\n:Route" as ROUTE
+participant "train\n:Train" as TRAIN
+participant "station\n:Station" as STATION
+participant "locomotive\n:Locomotive" as LOCO
+
+activate PLAYER
+    PLAYER -> UI : run()
+    activate UI
+        UI -> UI : chooseTrain()
+        UI -> CTRL : getTrainList()
+        activate CTRL
+            CTRL -> SCENARIO : getTrainList()
+            activate SCENARIO
+                SCENARIO --> CTRL : List<Train>
+            deactivate SCENARIO
+            CTRL --> UI : List<Train>
+        deactivate CTRL
+        UI --> PLAYER : shows train list and requests selection
+
+        PLAYER -> UI : selects train
+
+        UI -> UI : defineRoute(train)
+            UI -> UI : chooseFirstStation(fuelType)
+            UI -> CTRL : verifyIfStationsHaveLines(fuelType)
+            activate CTRL
+                CTRL -> MAP : getStationList()
+                activate MAP
+                    MAP -> ST_REPO : getStations()
+                    activate ST_REPO
+                        ST_REPO --> MAP : List<Station>
+                    deactivate ST_REPO
+                    MAP --> CTRL : List<Station>
+                deactivate MAP
+                CTRL --> UI : List<Station>
+            deactivate CTRL
+            UI --> PLAYER : shows available stations
+            PLAYER -> UI : selects first station
+
+            loop while building route
+                UI -> CTRL : availableStationConnections(currentStation, fuelType)
+                activate CTRL
+                    CTRL -> CTRL : getAvailableLinesToStation(station, fuelType)
+                    CTRL --> CTRL : List<RailwayLine>
+                    CTRL -> MAP : getRailwayLines()
+                    activate MAP
+                        MAP -> RL_REPO : getAllRailwayLines()
+                        activate RL_REPO
+                            RL_REPO --> MAP : List<RailwayLine>
+                        deactivate RL_REPO
+                        MAP --> CTRL : List<RailwayLine>
+                    deactivate MAP
+                    CTRL --> UI : List<Connection>
+                deactivate CTRL
+                UI --> PLAYER : shows available connections
+                PLAYER -> UI : selects next station or saves
+            end
+
+        UI -> UI : defineGeneratingRate()
+        UI -> CTRL : createRoute(train, route, generatingRate)
+        activate CTRL
+            CTRL -> ROUTE : new Route(train, stations, currentTime, generatingRate)
+            activate ROUTE
+                ROUTE -> TRAIN : getName(), getLocomotive()
+                activate TRAIN
+                    TRAIN -> LOCO : getName(), getFuelType()
+                    activate LOCO
+                        LOCO --> TRAIN : name, fuelType
+                    deactivate LOCO
+                    TRAIN --> ROUTE : name, locomotive
+                deactivate TRAIN
+                ROUTE --> CTRL : Route
+            deactivate ROUTE
+            CTRL -> SIM : addRoute(route)
+            activate SIM
+                SIM --> CTRL : confirmation
+            deactivate SIM
+            CTRL -> SCENARIO : getTrainList()
+            activate SCENARIO
+                SCENARIO --> CTRL : List<Train>
+            deactivate SCENARIO
+            CTRL -> SCENARIO : removeTrain(train)
+            activate SCENARIO
+                SCENARIO --> CTRL : confirmation
+            deactivate SCENARIO
+            CTRL --> UI : operation success
+        deactivate CTRL
+        UI --> PLAYER : shows operation success
+    deactivate UI
+deactivate PLAYER
+
+@enduml

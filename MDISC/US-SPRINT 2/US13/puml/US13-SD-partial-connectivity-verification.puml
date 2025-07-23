@@ -1,0 +1,35 @@
+@startuml partial_connectivity_verification
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Player" as Player
+participant ":ConnectivityBetweenStationsUI" as UI
+participant ":ConnectivityBetweenStationsController" as CTRL
+participant "Adjacency Matrix\n:ViewAdjacencyMatrixUI" as ADJ_MATRIX_UI
+participant "Transitive Matrix\n:ViewTransitiveMatrixUI" as TRANS_MATRIX_UI
+participant "Utils_MDISC" as UTILS
+
+UI -> CTRL : Filter railway lines by train type
+CTRL -> CTRL : Filter railway lines (filterRailwayLinesType)
+CTRL -> UTILS : buildAdjacencyMatrix(stationList, availableLines)
+activate UTILS
+UTILS --> CTRL : adjacencyMatrix
+deactivate UTILS
+CTRL -> ADJ_MATRIX_UI : Display adjacency matrix
+CTRL -> CTRL : Calculate transitive closure matrix (getTransitiveClosureMatrix)
+CTRL -> TRANS_MATRIX_UI : Display transitive closure matrix
+CTRL -> CTRL : Verify transitive connectivity between stations (isConnectedTransitive)
+alt Stations connected
+    CTRL --> UI : Stations are connected
+    UI --> Player : Display message: Stations are connected
+    activate Player
+    deactivate Player
+else Stations not connected
+    CTRL --> UI : Stations are not connected
+    UI --> Player : Display message: Stations are not connected
+    activate Player
+    deactivate Player
+end
+@enduml

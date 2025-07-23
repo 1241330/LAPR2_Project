@@ -1,0 +1,127 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Editor" as EDT
+participant ":CreateScenarioUI" as UI
+participant ":CreateScenarioController" as CTRL
+participant "Repositories" as REPOS
+participant "repositories\n:Repositories" as REPOS_SINGLETON
+participant "mapRepository\n:MapRepository" as MAP_REPO
+participant "scenarioRepository\n:ScenarioRepository" as SCENARIO_REPO
+participant "industryRepository\n:IndustryRepository" as IND_REPO
+participant "primaryResourceRepository\n:PrimaryResourceRepository" as PRIM_RES_REPO
+participant "transformingResourceRepository\n:TransformingResourceRepository" as TRANSF_RES_REPO
+participant "houseBlockResourceRepository\n:HouseBlockResourceRepository" as HB_RES_REPO
+participant "actualMap\n:Map" as MAP
+participant "scenario\n:Scenario" as SCENARIO
+participant "port\n:Port" as PORT
+participant "industry\n:Industry" as INDUSTRY
+
+activate EDT
+EDT -> UI : start CreateScenarioUI()
+activate UI
+UI -> CTRL : new CreateScenarioController()
+activate CTRL
+
+' Map selection
+CTRL -> REPOS : getInstance()
+activate REPOS
+REPOS --> CTRL : repositories
+deactivate REPOS
+CTRL -> REPOS_SINGLETON : getMapRepository()
+activate REPOS_SINGLETON
+REPOS_SINGLETON --> CTRL : mapRepository
+deactivate REPOS_SINGLETON
+CTRL -> MAP_REPO : getAllMaps()
+activate MAP_REPO
+MAP_REPO --> CTRL : List<Map>
+deactivate MAP_REPO
+CTRL --> UI : return List<Map>
+deactivate CTRL
+UI --> EDT : show list of available maps
+EDT -> UI : select map (mapId)
+UI -> CTRL : setSelectedMap(mapId)
+activate CTRL
+CTRL -> MAP_REPO : getMapById(mapId)
+activate MAP_REPO
+MAP_REPO --> CTRL : actualMap
+deactivate MAP_REPO
+CTRL --> UI : map selected
+deactivate CTRL
+
+' Port and resource configuration (AC01)
+group Define Ports and Resources
+    loop for each port
+        UI -> CTRL : createOrSelectPort(portType)
+        activate CTRL
+        CTRL -> PORT : setPortType(portType)
+        deactivate CTRL
+        UI -> CTRL : addCargoToPort(portId, cargoType, resource)
+        activate CTRL
+        CTRL -> PORT : addCargo(cargoType, resource)
+        deactivate CTRL
+        UI -> CTRL : assignPortToScenario(portId)
+        activate CTRL
+        CTRL -> SCENARIO : addPort(port)
+        deactivate CTRL
+    end
+end
+
+' Definition of available locomotion types (AC02)
+group Define Locomotion Types
+    UI --> EDT : request available locomotion types (STEAM, DIESEL, ELECTRIC)
+    EDT -> UI : select locomotion types
+    UI -> CTRL : setAvailableLocomotionTypes(selectedTypes)
+    activate CTRL
+    CTRL -> SCENARIO : addAvailableLocomotionTypes(selectedTypes)
+    deactivate CTRL
+end
+
+' Definition of industry generation factors (AC03)
+group Define Industry Generation Factors
+    UI --> EDT : request generation factors (frequency, quantity, etc)
+    EDT -> UI : input factors for each industry
+    loop for each industry
+        UI -> IND_REPO : getAllIndustries()
+        activate IND_REPO
+        IND_REPO --> UI : List<Industry>
+        deactivate IND_REPO
+        UI -> CTRL : setIndustryGenerationFactor(industryId, factor)
+        activate CTRL
+        CTRL -> INDUSTRY : updateGenerationFactor(factor)
+        deactivate CTRL
+        CTRL -> SCENARIO : updateIndustry(industry)
+        deactivate CTRL
+    end
+end
+
+' Definition of dates and initial money
+UI --> EDT : request start/end dates and initial money
+activate EDT
+EDT -> UI : input dates and money
+deactivate EDT
+UI -> CTRL : setScenarioDatesAndMoney(startDate, endDate, money)
+activate CTRL
+CTRL -> SCENARIO : setDatesAndMoney(startDate, endDate, money)
+deactivate CTRL
+
+' Scenario creation
+UI -> CTRL : createScenario()
+activate CTRL
+CTRL -> SCENARIO_REPO : addScenario(scenario)
+activate SCENARIO_REPO
+SCENARIO_REPO -> SCENARIO : save scenario
+activate SCENARIO
+SCENARIO --> SCENARIO_REPO : confirmation
+deactivate SCENARIO
+SCENARIO_REPO --> CTRL : confirmation
+deactivate SCENARIO_REPO
+CTRL --> UI : scenario successfully created
+deactivate CTRL
+UI --> EDT : show success/error message
+deactivate UI
+deactivate EDT
+@enduml

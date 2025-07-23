@@ -1,0 +1,39 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+hide circle
+hide methods
+
+title US11
+
+class Player {
+    username: Text
+    password: Text
+}
+
+class Train {
+    name: Text
+    power: Decimal
+    acceleration: Decimal
+    topSpeed: Decimal
+    startYearOperation: Integer
+    acquisitionPrice: Decimal
+}
+
+class Cargo {
+  type: Text
+}
+
+class Fuel {
+  type: Text
+}
+
+Player "1" - "*" Train: owns >
+
+Train "1" - "*" Cargo: has >
+Train "*" -- "1  " Fuel: moves with >
+
+@enduml

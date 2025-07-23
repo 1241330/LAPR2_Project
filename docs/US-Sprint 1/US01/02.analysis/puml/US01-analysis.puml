@@ -1,0 +1,29 @@
+@startuml
+hide circle
+hide methods
+
+title: Relevant Domain Model Excerpt - US01
+
+class Editor {
+   username: Text
+   password: Text
+}
+
+class Map {
+   name: Text
+}
+class Position {
+   Xposition: Integer
+   Yposition: Integer
+}
+
+class Size {
+   width: Integer
+   height: Integer
+}
+
+Editor "1" -- "1..*" Map : creates/edits >
+Map "*" -- "1" Size : has >
+Map "*" -- "1..*" Position : has >
+
+@enduml

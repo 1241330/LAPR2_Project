@@ -1,0 +1,91 @@
+@startuml
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+autonumber
+
+actor "Player" as PLAYER
+participant ":ShowStationUI" as UI
+participant ":ShowStationsController" as CTRL
+participant "Repositories" as REPOS
+participant "mapRepository\n:MapRepository" as MAP_REPO
+participant ": Station" as ST
+participant "stationRepository\n:StationRepository" as ST_REPO
+participant ":StationMapper" as MAPPER
+participant "stationList : List<Station>" as ST_LIST
+participant "stationDtoList : List<StationDTO>" as ST_DTO_LIST
+participant "stationDTO : StationDTO" as ST_DTO
+
+activate PLAYER
+    PLAYER -> UI : run()
+    activate UI
+
+        UI -> CTRL : listStations()
+        activate CTRL
+
+            CTRL -> REPOS : getInstance()
+            activate REPOS
+            REPOS --> CTRL : repositories
+
+            deactivate REPOS
+
+            CTRL -> MAP_REPO : getMapById(mapId)
+            activate MAP_REPO
+                MAP_REPO --> CTRL : MapRepository
+            deactivate MAP_REPO
+
+            CTRL -> ST : getStationList()
+            activate ST
+
+
+                ST -> ST_LIST** : create()
+
+                ST --> CTRL : stationList
+            deactivate ST
+
+
+
+            CTRL -> MAPPER : toDTO(stationList)
+            activate MAPPER
+
+                MAPPER -> ST_DTO_LIST** : create()
+
+                loop for each station in stationList
+
+                    MAPPER -> ST_LIST : get(index)
+                    activate ST_LIST
+                    deactivate ST_LIST
+                    MAPPER -> MAPPER : dto = toDTO(station)
+                    activate MAPPER
+                    deactivate MAPPER
+                    MAPPER -> ST_DTO** : create()
+
+                    MAPPER -> ST_DTO_LIST : add(stationDto)
+                    activate ST_DTO_LIST
+                    deactivate ST_DTO_LIST
+                end loop
+
+                MAPPER --> CTRL : stationDtoList
+            deactivate MAPPER
+
+            CTRL --> UI : stationDtoList
+        deactivate CTRL
+
+        UI -> PLAYER : shows station list and requests selection
+        PLAYER -> UI : selects station
+        UI -> CTRL : getStationDetails(stationId)
+        activate CTRL
+        CTRL -> ST_REPO : getName(), getType(), getPosition(), getDirection()
+        activate ST_REPO
+        CTRL -> ST_REPO : getBuildings(), getCargoes()
+
+        ST_REPO --> CTRL : returns station details
+        deactivate ST_REPO
+        CTRL -> UI : stationDetails
+        deactivate CTRL
+
+        UI -> PLAYER : shows selected station details
+
+deactivate PLAYER
+
+@enduml

@@ -1,0 +1,234 @@
+@startuml
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+skinparam linetype orto
+
+skinparam classAttributeIconSize 0
+
+' --------------------
+' DOMAIN CLASSES
+' --------------------
+class User {
+}
+
+class Editor {
+}
+
+class Industry {
+    - id : int
+    - name : String
+    - type : IndustryType
+    - assignedStation : Station
+    - {static} counterCreatedStations : int
+    + Industry(name: String, type: IndustryType, position: Position)
+    + getName(): String
+    + getId(): int
+    + getType(): String
+    + toString(): String
+    + getIndustryType(): IndustryType
+    - calculateOccupiedPositions(position: Position): List<Position>
+}
+
+enum IndustryType {
+    PRIMARY_SECTOR
+    TRANSFORMING
+    MIXED
+    ...()
+}
+
+class PrimaryIndustry {
+    + PrimaryIndustry(String name, IndustryType type, Position position)
+    + PrimaryIndustry(String name, String scenarioName, PrimaryResource primaryResource)
+    + toString(): String
+    ...()
+}
+
+class MixedIndustry {
+    + MixedIndustry(name: String, type: IndustryType, position: Position)
+    + MixedIndustry(name: String, scenarioName: String)
+    + toString(): String
+    ...()
+}
+
+class TransformingIndustry {
+    + TransformingIndustry(name: String, type: IndustryType, position: Position)
+    + TransformingIndustry(name: String, scenarioName: String, transformingResource: TransformingResource)
+    + toString(): String
+    ...()
+}
+
+class Position {
+    + Position(x : int, y : int)
+    + getX() : int
+    + getY() : int
+    + equalsPosition(position : Position) : boolean
+    + toString() : String
+    - x : int
+    - y : int
+}
+
+class Map {
+    - mapElementsUsed : List<MapElement>
+    - occupiedPositions : List<Position>
+    + addElement(element: MapElement): boolean
+    + removeElement(element: MapElement): boolean
+    + getOccupiedPositions(): List<Position>
+    + positionOccupiedList(positions: List<Position>): boolean
+    - listAllOccupiedPositions(): void
+    ...()
+}
+
+abstract class MapElement {
+    - position : Position
+    - occupiedPositions : List<Position>
+    MapElement(position : Position, occupiedPositions : List<Position>)
+    getPosition() : Position
+    setPosition(position : Position) : void
+    getOccupiedPositions() : List<Position>
+    - position : Position
+    - occupiedPositions : List<Position>
+    ...()
+}
+
+
+' --------------------
+' CONTROLLERS
+' --------------------
+class AddIndustryController {
+    - mapRepo : MapRepository
+    - selectedMap : Map
+    - type : IndustryType
+    + AddIndustryController(mapId: int)
+    + getAllIndustryTypes(): List<String>
+    + addIndustry(industryTypeDesc: String, industryName: String, x: int, y: int): void
+    + getWidthMap(): int
+    + getHeightMap(): int
+}
+
+' --------------------
+' UI
+' --------------------
+class AddIndustryUI {
+    - controller : AddIndustryController
+    - mapId : int
+    + AddIndustryUI(mapId: int)
+    + run(): void
+    - getIndustryName(): String
+}
+
+' --------------------
+' REPOSITORIES
+' --------------------
+class IndustryRepository {
+    - industries : List<Industry>
+    + IndustryRepository()
+    + addIndustry(industry: Industry): boolean
+    + removeIndustry(industry: Industry): boolean
+    + getIndustryById(id: int): Industry
+    + getIndustryCount(): int
+    + getAllIndustries(): List<Industry>
+    + industryExists(industry: Industry): boolean
+    + industryNameExists(name: String): boolean
+    - industries: List<Industry>
+}
+
+class Repositories {
+    - Repositories()
+    + {static} getInstance()
+    + getIndustryRepository(): IndustryRepository
+    + getMapRepository(): MapRepository
+    ...()
+}
+
+class MapRepository {
+    + getMapById(id : int) : Map
+    ...()
+}
+
+
+' --------------------
+' RELATIONSHIPS
+' --------------------
+User "1" --> "0..*" Editor : can have
+Editor "1" ---> "1" User : belongs to
+Editor "1" --> "*" Industry : can manage
+Editor "1" ---> "1" AddIndustryController : interacts with
+
+AddIndustryUI "1" .> "1" AddIndustryController
+AddIndustryUI "1" .> "1" Map
+
+AddIndustryController "1" .> "1" Map : manages
+AddIndustryController "1" ---> "1" MapElement : occupies
+AddIndustryController "1" ---> "1" Position : occupies
+AddIndustryController "1" ..> "*" Industry : creates
+AddIndustryController "1" ..> "*" PrimaryIndustry : creates
+AddIndustryController "1" ..> "*" TransformingIndustry : creates
+AddIndustryController "1" ..> "*" MixedIndustry : creates
+AddIndustryController "1" ..> "1" IndustryRepository : persists
+AddIndustryController "1" ..> "1" IndustryType : retrieves
+AddIndustryController "1" ..> "1" MapRepository : retrieves
+AddIndustryController "1" ..> "1" AddIndustryUI : interacts with
+
+
+Industry "1" --> "1" IndustryType : has
+Industry --> MapElement
+PrimaryIndustry --> Industry
+MixedIndustry --> Industry
+TransformingIndustry --> Industry
+
+Map "1" *--> "*" MapElement : contains
+Map "1" --> "*" Industry: contain
+Map "1" --> "1..*" Position: has
+MapElement "1" --> "1" Position : located at
+
+Repositories -> "1" Repositories : instance
+Repositories "1" --> "1" IndustryRepository : provides
+Repositories "1" --> "1" MapRepository : provides
+MapRepository "1" --> "1" Map : manages
+
+' --------------------
+' NOTES
+' --------------------
+note right of AddIndustryController
+    The "AddIndustryController" is responsible for adding industries to the map,
+    ensuring the availability of space and handling the position occupation validation.
+end note
+
+note bottom of Industry
+    The "Industry" class serves as the base class for all types of industries,
+    defining common attributes and methods shared by specific industry types.
+end note
+
+note bottom of IndustryType
+    The "IndustryType" class represents the categorisation of industries,
+    which can be Primary, Transforming, or Mixed. It provides methods for retrieving
+    industry types by description and getting a list of all available types.
+end note
+
+note bottom of Map
+    The "Map" class represents the game or simulation map, which holds all map elements,
+    including industries. It provides methods for managing the size and position of elements
+    within the map, as well as validating occupied positions.
+end note
+
+note left of MapElement
+    The "MapElement" class is an abstract class designed to represent any object
+    that can be placed on the map, such as industries or resources. It provides methods
+    for managing position and occupation status.
+end note
+
+note left of AddIndustryUI
+    The "AddIndustryUI" is a user interface class responsible for receiving input from
+    the user to add a new industry to the map. It collects details such as the industry name
+    and type, as well as its position on the map.
+end note
+
+note bottom of IndustryRepository
+    The "IndustryRepository" class is responsible for managing and persisting industries.
+    It stores all the industries created within the system and provides methods for querying
+    and modifying the list of industries.
+end note
+
+@enduml

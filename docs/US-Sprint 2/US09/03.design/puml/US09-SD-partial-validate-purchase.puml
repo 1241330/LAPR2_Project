@@ -1,0 +1,36 @@
+@startuml validate_purchase
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Player" as PLY
+participant ":BuyLocomotiveUI" as UI
+participant ":BuyTrainPartController" as CTRL
+participant ":Simulation" as SIMULATION
+participant ":Scenario" as SCENARIO
+
+group Validate Purchase
+    CTRL -> SIMULATION : getActualMoney()
+    activate SIMULATION
+    SIMULATION --> CTRL : actualMoney
+    deactivate SIMULATION
+
+    alt Not enough money
+        CTRL --> UI : "You do not have enough money"
+        UI --> PLY : showError("Not enough money")
+        activate PLY
+        deactivate PLY
+        deactivate CTRL
+        deactivate UI
+        return
+    else Sufficient money
+        CTRL -> SIMULATION : setActualMoney(actualMoney - price)
+        CTRL -> SCENARIO : addBoughtLocomotive(selectedLocomotive)
+        CTRL --> UI : "Locomotive bought successfully"
+        UI --> PLY : showSuccess("Locomotive bought")
+        activate PLY
+        deactivate PLY
+    end
+end
+@enduml

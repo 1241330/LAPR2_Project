@@ -1,0 +1,80 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Editor" as EDT
+participant ":AddCityUI" as UI
+participant ":AddCityController" as CTRL
+participant "position\n:Position" as POS
+participant "houseBlock\n:HouseBlock" as HB
+
+activate EDT
+activate UI
+UI -> EDT : addCity()
+UI -> CTRL : getNumberFreePositions()
+    activate CTRL
+        CTRL -> CTRL : ((mapHeight * mapWidth) - occupiedPositions.size())
+        CTRL --> UI : return numberFreePositions
+    deactivate CTRL
+    loop until number house blocks is valid (1 < n < nFreePositions)
+        UI --> EDT : ask number of house blocks
+        EDT -> UI : enter number
+        alt invalid value
+            UI --> EDT : Error message: invalid value
+        else
+            UI -> UI : save nHouseBlocks
+        end
+    end
+    UI -> CTRL : setNumberHouseBlocks(nHouseBlocks)
+    activate CTRL
+        CTRL -> CTRL : save numberHouseBlocks
+        CTRL --> UI : numberHouseBlocks accepted
+    deactivate CTRL
+    UI -> CTRL : setAutomaticHouseBlocks()
+    activate CTRL
+        CTRL -> CTRL : houseBlockList.clear()
+        CTRL -> CTRL : addedHouses = new ArrayList<>()
+        CTRL -> CTRL : centerX = getPositionX()
+        CTRL -> CTRL : centerY = getPositionY()
+        CTRL -> CTRL : scaleValue = 0.065
+        CTRL -> CTRL :  nAttempts = 0
+        note over CTRL : other variables read above
+        loop while addedHouses.size() < numberHouseBlocks
+            alt nAttempts == 0
+                CTRL -> CTRL : scaleValue = 0.065
+            else
+                CTRL -> CTRL : scaleValue *= 1.005
+            end
+            CTRL -> CTRL : sigma = targetHouses * scaleValue
+            CTRL -> CTRL : dx = rand.nextGaussian() * sigma
+            CTRL -> CTRL : dy = rand.nextGaussian() * sigma
+            CTRL -> CTRL : x = round(centerX + dx)
+            CTRL -> CTRL : y = round(centerY + dy)
+            alt x < 0 || x >= width || y < 0 || y >= height
+                note over CTRL : off-limits position, ignore
+            else
+                CTRL -> POS : new Position(x, y)
+                CTRL -> CTRL : check if busy or already added
+                alt ocupada ou repetida
+                    CTRL -> CTRL : nAttempts++
+                else
+                    CTRL -> CTRL : distance = Math.sqrt(dx * dx + dy * dy)
+                    CTRL -> CTRL : acceptanceProbability = Math.exp(-0.5 * Math.pow(distance / sigma, 2))
+                    alt accepts position
+                        CTRL -> CTRL : nAttempts = 0
+                        CTRL -> HB : new HouseBlock(pos)
+                        CTRL -> CTRL : houseBlockList.add(houseBlock)
+                        CTRL -> CTRL : addedHouses.add(position)
+                    else
+                        note over CTRL : rejected by Gaussian distribution
+                    end
+                end
+            end
+        end
+        CTRL --> UI : automatic house blocks successfully
+    deactivate CTRL
+deactivate UI
+deactivate EDT
+@enduml

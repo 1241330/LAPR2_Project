@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="505.0" prefWidth="610.0" style="-fx-background-color: white; -fx-border-color: #8c7853; -fx-border-width: 5px;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pt.ipp.isep.dei.ui.gui.houseBlock.ShowHouseBlockDetailsInMapGUI">
+    <stylesheets>
+        <URL value="@../buttons.css" />
+    </stylesheets>
+    <children>
+
+        <!-- Título centrado -->
+        <HBox alignment="CENTER" layoutX="0.0" layoutY="20.0" prefWidth="600.0">
+            <Label text="House Block Details" textFill="#8C7853">
+                <font>
+                    <Font name="Algerian" size="48.0" />
+                </font>
+            </Label>
+        </HBox>
+
+        <!-- Botão de fechar -->
+        <Button layoutX="473.0" layoutY="455.0" onAction="#handleClose" prefHeight="27.0" prefWidth="96.0" style="-fx-background-color: #b39a6f; -fx-text-fill: white;" text="Close">
+            <font>
+                <Font name="System Bold" size="16.0" />
+            </font>
+        </Button>
+      <Separator layoutX="15.0" layoutY="69.0" prefHeight="6.0" prefWidth="570.0" style="-fx-background-color: #b39a6f; -fx-border-color: #b39a6f; -fx-border-width: 1;" />
+      <AnchorPane layoutX="39.0" layoutY="91.0" prefHeight="358.0" prefWidth="530.0" style="-fx-border-color: #b39a6f; -fx-border-width: 2; -fx-border-radius: 10; -fx-background-radius: 10;">
+         <children>
+      
+                 <!-- Nome da cidade -->
+              <Label fx:id="cityNameLabel" layoutX="10.0" layoutY="10.0" text="City: -" textFill="#8C7853">
+                  <font>
+                      <Font name="System Bold" size="18.0" />
+                  </font>
+              </Label>
+      
+                 <!-- Posição do bloco -->
+              <Label fx:id="positionLabel" layoutX="9.0" layoutY="43.0" text="Position: -" textFill="#8C7853">
+                  <font>
+                      <Font name="System Bold" size="18.0" />
+                  </font>
+              </Label>
+      
+                 <!-- Estação atribuída -->
+              <Label fx:id="stationLabel" layoutX="9.0" layoutY="77.0" text="Assigned Station: -" textFill="#8C7853">
+                  <font>
+                      <Font name="System Bold" size="18.0" />
+                  </font>
+              </Label>
+      
+                 <!-- Produções -->
+              <Label layoutX="10.0" layoutY="119.0" text="Productions:" textFill="#8C7853">
+                  <font>
+                      <Font name="System Bold" size="18.0" />
+                  </font>
+              </Label>
+              <ListView fx:id="productionsListView" layoutX="10.0" layoutY="147.0" prefHeight="66.0" prefWidth="500.0" style="-fx-border-color: #8C7853;" />
+      
+                 <!-- Inventário -->
+              <Label layoutX="9.0" layoutY="223.0" text="Inventory:" textFill="#8C7853">
+                  <font>
+                      <Font name="System Bold" size="18.0" />
+                  </font>
+              </Label>
+              <ListView fx:id="inventoryListView" layoutX="10.0" layoutY="250.0" prefHeight="91.0" prefWidth="500.0" style="-fx-border-color: #8C7853;" />
+         </children>
+      </AnchorPane>
+
+    </children>
+</AnchorPane>

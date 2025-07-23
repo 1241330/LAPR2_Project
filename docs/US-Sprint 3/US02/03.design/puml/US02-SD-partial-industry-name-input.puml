@@ -1,0 +1,35 @@
+@startuml industry_name_input
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Editor" as EDT
+participant ":AddIndustryUI" as UI
+participant ":AddIndustryController" as CTRL
+participant "industryRepository\n:IndustryRepository" as IND_REPO
+
+group Industry Name Input
+    loop until valid name
+        UI --> EDT : ask for industry name
+        activate EDT
+        EDT -> UI : enter industryName
+        deactivate EDT
+
+        UI -> CTRL : checkIndustryNameExists(industryName)
+        activate CTRL
+        CTRL -> IND_REPO : industryNameExists(industryName)
+        activate IND_REPO
+        IND_REPO --> CTRL : true / false
+        deactivate IND_REPO
+        CTRL --> UI : nameExists
+        deactivate CTRL
+
+        alt name exists
+            UI --> EDT : error message: industry name exists
+        else
+            UI -> CTRL : setIndustryName(industryName)
+        end
+    end
+end
+@enduml

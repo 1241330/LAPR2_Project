@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="541.0" prefWidth="618.0" style="-fx-background-color: white; -fx-border-color: #8c7853; -fx-border-width: 5px;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pt.ipp.isep.dei.ui.gui.industry.ShowTransformingIndustryDetailsInMapGUI">
+    <stylesheets>
+        <URL value="@../buttons.css" />
+    </stylesheets>
+    <children>
+
+        <AnchorPane layoutX="34.0" layoutY="157.0" prefHeight="319.0" prefWidth="556.0" style="-fx-border-color: #b39a6f; -fx-border-width: 2; -fx-border-radius: 10; -fx-background-radius: 10;">
+            <children>
+                <Label fx:id="nameLabel" layoutX="14.0" layoutY="12.0" text="Name: -" textFill="#8C7853">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+
+                <Label fx:id="positionLabel" layoutX="14.0" layoutY="44.0" text="Position: -" textFill="#8C7853">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+
+                <Label fx:id="stationLabel" layoutX="14.0" layoutY="77.0" text="Assigned Station: -" textFill="#8C7853">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+
+                <Label fx:id="transformingResourceLabel" layoutX="14.0" layoutY="110.0" text="Transforming Resource: -" textFill="#8C7853">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+
+                <Label fx:id="primaryResourcesLabel" layoutX="14.0" layoutY="142.0" prefHeight="27.0" prefWidth="532.0" text="Primary Resources: -" textFill="#8C7853" wrapText="true">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+
+                <Label layoutX="13.0" layoutY="175.0" text="Inventory:" textFill="#8C7853">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+
+                <ListView fx:id="inventoryListView" layoutX="11.0" layoutY="202.0" prefHeight="103.0" prefWidth="532.0" style="-fx-border-color: #8C7853;" />
+            </children>
+        </AnchorPane>
+
+        <Label layoutX="116.0" layoutY="35.0" text="TRANSFORMING" textFill="#8C7853">
+            <font>
+                <Font name="Algerian" size="52.0" />
+            </font>
+        </Label>
+
+        <Label layoutX="84.0" layoutY="83.0" text="Industry details" textFill="#8C7853">
+            <font>
+                <Font name="Algerian" size="52.0" />
+            </font>
+        </Label>
+
+        <Button layoutX="454.0" layoutY="489.0" onAction="#handleClose" prefHeight="37.0" prefWidth="135.0" style="-fx-background-color: #b39a6f; -fx-text-fill: white;" text="Close">
+            <font>
+                <Font name="System Bold" size="16.0" />
+            </font>
+        </Button>
+      <Separator layoutX="45.0" layoutY="139.0" prefHeight="8.0" prefWidth="526.0" style="-fx-background-color: #b39a6f; -fx-border-color: #b39a6f; -fx-border-width: 1;" />
+
+    </children>
+</AnchorPane>

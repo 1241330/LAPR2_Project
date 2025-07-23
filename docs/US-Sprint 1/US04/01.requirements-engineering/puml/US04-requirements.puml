@@ -1,0 +1,67 @@
+@startuml
+actor Editor
+participant System
+title: System Sequence Diagram (SSD) - US04
+
+
+activate Editor
+
+loop Until Map Valid
+    Editor -> System: 1. Select a map
+    activate System
+    System -> System: 2. Confirm selected map
+    alt Map Exist
+        System --> Editor: 3.1 confirms map selection
+    else Map does not exist
+        System --> Editor: 3.2 Returns error
+        deactivate System
+    end
+end
+
+Editor -> System: 4. Create scenario
+
+loop Until Port information is Valid
+    activate System
+    System --> Editor:4.1.1 (AC01)Asks for information on port generation
+    deactivate System
+    Editor ->  System:4.1.2 (AC01)Gives information about Ports
+    activate System
+    System ->  System:4.1.3 Confirm port generation
+    alt Valid information
+        System --> Editor:4.1.4.2 Returns Confirmation
+    else Invalid Information
+    System --> Editor:4.1.4.2 Returns Error
+
+    end
+end
+
+loop Until locomotive information is valid
+    System --> Editor: 4.2.1 (AC02)Ask which locomotives companies are available
+    deactivate System
+    Editor -> System: 4.2.2 (AC02)Provides information on locomotives
+    activate System
+    System ->  System:4.2.3 Confirm locomotives information
+    alt Valid information
+        System --> Editor:4.2.4.2 Returns Confirmation
+    else Invalid Information
+    System --> Editor:4.2.4.2 Returns Error
+    end
+end
+
+
+loop Until factors that alter generation of generating Industries are Valid
+    System --> Editor: 4.3.1 (AC03)Definition of the factors that alter the generation of generating industries
+    deactivate System
+    Editor -> System: 4.3.2 (AC03)Provides the factors that alter the  generation of generating industries
+    activate System
+    System ->  System:4.3.3 Confirm the generation of generating industries
+    alt Valid information
+        System --> Editor:4.3.4.2 Returns Confirmation
+    else Invalid Information
+    System --> Editor:4.3.4.2 Returns Error
+    end
+end
+
+System --> Editor:  5. Display success message
+
+@enduml

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<?import java.net.URL?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pt.ipp.isep.dei.ui.gui.simulation.PauseMenuGUI">
+   <stylesheets>
+      <URL value="@../buttons.css" />
+   </stylesheets>
+   <children>
+      <Button fx:id="trainRelatedButton" layoutX="346.0" layoutY="261.0" mnemonicParsing="false" onAction="#handleTrainRelatedButton" prefHeight="15.0" prefWidth="296.0" style="-fx-background-color: #b39a6f;" text="Train Related" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="20.0" />
+         </font>
+      </Button>
+      <Button fx:id="railwayRelatedButton" layoutX="346.0" layoutY="307.0" mnemonicParsing="false" onAction="#handleRailwayLineRelatedButton" prefHeight="9.0" prefWidth="296.0" style="-fx-background-color: #b39a6f;" text="Railway Line Related" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="20.0" />
+         </font>
+      </Button>
+      <Button fx:id="continueButton" layoutX="346.0" layoutY="166.0" mnemonicParsing="false" onAction="#handleContinueProgramButton" prefHeight="46.0" prefWidth="296.0" style="-fx-background-color: #b39a6f;" text="Continue Program" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="20.0" />
+         </font>
+      </Button>
+      <Button fx:id="stationRelatedButton" layoutX="346.0" layoutY="215.0" mnemonicParsing="false" onAction="#handleStationRelatedButton" prefHeight="34.0" prefWidth="296.0" style="-fx-background-color: #b39a6f;" text="Station Related" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="20.0" />
+         </font>
+      </Button>
+      <Button fx:id="routeRelatedButton" layoutX="346.0" layoutY="353.0" mnemonicParsing="false" onAction="#handleRouteRelatedButton" prefHeight="17.0" prefWidth="296.0" style="-fx-background-color: #b39a6f;" text="Route Related" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="20.0" />
+         </font>
+      </Button>
+      <Button fx:id="viewFinancialHistoryButton" layoutX="346.0" layoutY="399.0" mnemonicParsing="false" onAction="#handleViewFinancialHistoryButtonOnAction" prefHeight="16.0" prefWidth="296.0" style="-fx-background-color: #b39a6f;" text="View Financial History" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="20.0" />
+         </font>
+      </Button>
+      <Label layoutX="395.0" layoutY="50.0" text="Pause" textFill="#8c7853">
+         <font>
+            <Font name="Algerian" size="63.0" />
+         </font>
+      </Label>
+      <Label layoutX="413.0" layoutY="98.0" text="Menu" textFill="#8c7853">
+         <font>
+            <Font name="Algerian" size="63.0" />
+         </font>
+      </Label>
+      <Button fx:id="exitButton" layoutX="346.0" layoutY="498.0" mnemonicParsing="false" onAction="#handleEndSimulation" prefHeight="27.0" prefWidth="296.0" style="-fx-background-color: #b39a6f;" text="Exit" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="20.0" />
+         </font>
+      </Button>
+      <Label fx:id="actualDateLabel" layoutX="346.0" layoutY="8.0" prefHeight="25.0" prefWidth="296.0" textFill="#b39a6f">
+         <font>
+            <Font name="System Bold" size="16.0" />
+         </font>
+      </Label>
+      <Label fx:id="actuaBudgetLabel" layoutX="346.0" layoutY="34.0" prefHeight="25.0" prefWidth="296.0" textAlignment="CENTER" textFill="#b39a6f">
+         <font>
+            <Font name="System Bold" size="16.0" />
+         </font>
+      </Label>
+      <AnchorPane prefHeight="550.0" prefWidth="281.0" style="-fx-background-color: #8C7853;">
+         <children>
+            <ImageView fx:id="logoImageView" fitHeight="239.0" fitWidth="234.0" layoutX="13.0" layoutY="86.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../images/LogoMabec2.png" />
+               </image>
+            </ImageView>
+            <Label fx:id="contactLabel" layoutX="39.0" layoutY="387.0" prefHeight="22.0" prefWidth="128.0" text="Contact:" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="25.0" />
+               </font>
+            </Label>
+            <Label fx:id="phoneLabel" layoutX="39.0" layoutY="417.0" prefHeight="26.0" prefWidth="196.0" text="📞 +351 911 111 111" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="emailContactLabel" layoutX="39.0" layoutY="437.0" prefHeight="26.0" prefWidth="196.0" text="📧 MABEC@isep.ipp.pt" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <Button fx:id="showMapButton" layoutX="346.0" layoutY="445.0" mnemonicParsing="false" onAction="#handleShowMapButton" prefHeight="16.0" prefWidth="296.0" style="-fx-background-color: #b39a6f;" text="Show Map" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="20.0" />
+         </font>
+      </Button>
+   </children>
+</AnchorPane>

@@ -1,0 +1,58 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Player" as PLY
+participant ":US12UI" as UI
+participant ":US12Controller" as CTRL
+participant "Simulation" as SIM
+participant "Station" as ST
+participant "Resource" as RES
+
+activate PLY
+PLY -> UI : start US12UI(simulation, station)
+activate UI
+UI -> CTRL** : new US12Controller(simulation, station)
+activate CTRL
+CTRL --> UI : controller created
+deactivate CTRL
+
+group Main Flow
+    UI -> CTRL : performUS12Action()
+    activate CTRL
+
+        CTRL -> SIM : getCurrentTime()
+        activate SIM
+        SIM --> CTRL : currentTime
+        deactivate SIM
+
+        CTRL -> ST : getInventory()
+        activate ST
+        ST --> CTRL : inventory
+        deactivate ST
+
+        CTRL -> RES : checkResourceAvailability()
+        activate RES
+        RES --> CTRL : resource status
+        deactivate RES
+
+        alt resource available
+            CTRL -> ST : updateInventory()
+            activate ST
+            ST --> CTRL : inventory updated
+            deactivate ST
+            CTRL --> UI : "Resource successfully processed."
+            UI --> PLY : show success
+        else resource not available
+            CTRL --> UI : "Resource not available."
+            UI --> PLY : show error
+        end
+
+    deactivate CTRL
+end
+
+deactivate UI
+deactivate PLY
+@enduml

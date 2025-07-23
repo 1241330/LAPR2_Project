@@ -1,0 +1,53 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title System Sequence Diagram (SSD) - US12 - Create a simulator
+
+autonumber
+
+actor "Player"
+participant ":System" as System
+
+activate Player
+    Player -> System : start creating the simulation
+    activate System
+    System -> System : loads existing scenarios
+    loop While the scenario isn't valid
+        System --> Player : request the scenario to use
+        deactivate System
+        Player -> System : select scenario (there is at least 1 scenario)
+        activate System
+        alt Valid scenario
+            System -> System : save the choice of scenario
+            System --> Player : returns confirmation
+        else Invalid Information
+        System --> Player : returns message error
+        end
+    end
+    System -> System : load the respective map
+    System -> System : create a simulation
+    System --> Player : simulation successfully created
+    deactivate System
+    Player -> System : requests a simulation startup
+    activate System
+        System -> System : load network configuration
+        System -> System : initialize cargo generation rules (24 maximum)
+        System --> Player : shows simulator control panel
+    deactivate System
+
+    Player -> System : starts simulation
+    activate System
+    loop While the simulator is active
+        alt Pause pressed
+            System -> System : freeze cargo generation and updates
+            System --> Player : shows paused status, display generated cargo info so far
+        else Start pressed
+            System -> System : generate cargoes for stations based on city/industry data
+                        System -> System : distribute cargoes according to industries
+                        System -> System : update station displays with cargo info
+                        System --> Player : displays cargo updates
+        end
+    end
+@enduml

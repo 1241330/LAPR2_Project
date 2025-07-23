@@ -1,0 +1,79 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Editor" as EDT
+participant ":AddCityUI" as UI
+participant ":AddCityController" as CTRL
+participant "Repositories" as REPOS
+participant "repositories\n:Repositories" as REPOS_SINGLETON
+participant "cityRepository\n:CityRepository" as CITY_REPO
+participant "houseBlockRepository\n:HouseBlockRepository" as HB_REPO
+participant "actualMap\n:Map" as MAP
+participant "mapElement\n:MapElement" as MAP_ELEM
+participant "city\n:City" as CITY
+
+activate EDT
+    EDT -> UI : start AddCityUI(mapId)
+    activate UI
+    UI -> CTRL : addCityToMap()
+            activate CTRL
+                CTRL -> CITY** : city = new City(cityName, positionCity, houseBlockList, houseBlockPositions)
+                CTRL -> MAP : addElement(city)
+                activate MAP
+                    alt success
+                        MAP --> REPOS : getInstance()
+                        activate REPOS
+                            REPOS -> MAP : repositories
+                        deactivate REPOS
+                        MAP --> REPOS_SINGLETON : getCityRepository()
+                        activate REPOS_SINGLETON
+                            REPOS_SINGLETON -> MAP : cityRepository
+                        deactivate REPOS_SINGLETON
+                        MAP --> REPOS_SINGLETON : getHouseBlockRepository()
+                        activate REPOS_SINGLETON
+                            REPOS_SINGLETON -> MAP : houseBlockRepository
+                        deactivate REPOS_SINGLETON
+                        MAP --> CITY_REPO : addCity(city)
+                        activate CITY_REPO
+                            CITY_REPO -> MAP : confirmation
+                        deactivate CITY_REPO
+                        MAP -> CITY : getHouseBlocks()
+                        activate CITY
+                            return List<HouseBlock> houseBlockList
+                        deactivate CITY
+
+                        loop each houseBlock in houseBlockList
+                            MAP --> HB_REPO : addHouseBlock(houseBlock)
+                            activate HB_REPO
+                                HB_REPO -> HB_REPO : houseBlocks.add(houseBlock)
+                                HB_REPO -> MAP : confirmation
+                            deactivate HB_REPO
+                        end
+                        MAP -> MAP : mapElementUsed.add(city)
+                        MAP -> MAP : listAllOccupiedPositions()
+                        MAP -> MAP : occupiedPositions.clear()
+                        loop for each mapElement in mapElementsUsed
+                            MAP -> MAP_ELEM** : getOccupiedPositions()
+                            activate MAP_ELEM
+                                MAP_ELEM --> MAP : List<Position> occupiedByElement
+                            deactivate MAP_ELEM
+                            MAP -> MAP : occupiedPositions.addAll(occupiedByElement)
+                        end
+                        MAP --> CTRL : return new ArrayList<>(occupiedPositions)
+                        MAP -> UI : return validation = true
+                    else failure
+                        MAP -> UI : return validation = false
+                    end
+                deactivate MAP
+            deactivate CTRL
+            alt validation
+                UI --> EDT: shows message: Add city to the map
+            else
+                UI --> EDT: shows message: Don't add city to the map
+            end
+    deactivate UI
+deactivate EDT
+@enduml

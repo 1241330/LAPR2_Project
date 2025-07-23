@@ -1,0 +1,78 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Editor" as EDT
+participant ":AddCityUI" as UI
+participant ":AddCityController" as CTRL
+participant "position\n:Position" as POS
+participant "houseBlock\n:HouseBlock" as HB
+
+activate EDT
+    activate UI
+    UI -> UI : List<HouseBlock> houseBlocksList = new ArrayList<>()
+    note over UI : previously read occupiedPositions, mapWidth, mapHeight
+    loop until valid X value
+        UI --> EDT : ask for X value
+        EDT -> UI : enter X
+        alt (0 < X < mapWidth)
+            UI -> UI : save X value
+        else
+            UI --> EDT : error message: invalid X value
+        end
+    end
+    loop until valid Y value
+        UI --> EDT : ask for Y value
+        EDT -> UI : enter Y
+        alt (0 < X < mapHeight)
+            UI -> UI : save Y value
+        else
+            UI --> EDT : error message: invalid Y value
+        end
+    end
+    UI -> POS** : newPosition = new Position(X - 1,Y - 1)
+    alt position occupied
+        UI --> EDT : Error message: Position already occupied
+    else
+        UI -> CTRL : cityFarFromTheCentre(newPosition)
+        activate CTRL
+            CTRL -> CTRL : LIMIT_HOUSE_BLOCK = 20;
+            note over CTRL : predefined value
+            CTRL -> CTRL : getEuclideanDistance(cityPosition,newPosition))
+            CTRL -> POS : cityPosition.getX()
+            activate POS
+                POS --> CTRL : return xCityPosition
+            deactivate POS
+            CTRL -> POS : newPosition.getX()
+            activate POS
+                POS --> CTRL : return xNewPosition
+            deactivate POS
+            CTRL -> POS : cityPosition.getY()
+            activate POS
+                POS --> CTRL : return yCityPosition
+            deactivate POS
+            CTRL -> POS : newPosition.getY()
+            activate POS
+                POS --> CTRL : return yNewPosition
+            deactivate POS
+            CTRL -> CTRL : dx = xCityPosition - xNewPosition
+            CTRL -> CTRL : dx = yCityPosition - yNewPosition
+            CTRL -> CTRL : euclideanDistance = Math.sqrt(dx * dx + dy * dy)
+            alt euclideanDistance > LIMIT_HOUSE_BLOCK
+                CTRL --> UI : return validation = true
+            else
+                CTRL --> UI : return validation = false
+            end
+            deactivate CTRL
+            alt validation
+                UI --> EDT : notice: New House Block significantly away from the City centre
+            end
+            UI -> HB : newHouseBlock = new HouseBlock(newPosition)
+            UI -> UI : houseBlocksList.add(newHouseBlock)
+            UI -> UI : occupiedPositionsMap.add(newPosition)
+        end
+    deactivate UI
+deactivate EDT
+@enduml

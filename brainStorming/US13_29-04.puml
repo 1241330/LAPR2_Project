@@ -1,0 +1,55 @@
+@startuml
+hide circle
+hide methods
+
+class Player {
+    +Edit a Scenario
+    +US13
+}
+
+class Choose_Map {
+    +Map_1
+    +Map_2
+    +Map_3
+}
+
+class Edit_Scenario {
+    *Create Station
+    *Create Lines
+}
+
+class US13{
+    +Choose an Existing Scenario
+    +Read from Scenario CSV
+}
+
+class existingScenario{
+    -Receives List of Stations
+    -Receives List of Lines
+}
+
+class readCSV{
+    *Create List of Stations
+    *Create List of Lines
+}
+
+class verifyConnectivity{
+    - Receives List of Station
+    - Receives List of Lines
+}
+
+
+Player -> Choose_Map: "Edit a Scenario"
+Player --> US13:"US13"
+
+Choose_Map -> Edit_Scenario:"Choose a Map"
+
+US13 -> existingScenario:"ExistingScenario"
+Edit_Scenario --> existingScenario:"returns data"
+
+US13 --> readCSV: "Read Scenario"
+
+readCSV -> verifyConnectivity:"returns Information"
+existingScenario -> verifyConnectivity:"returns Information"
+
+@enduml

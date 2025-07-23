@@ -1,0 +1,87 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Player" as Player
+participant ":ConnectivityBetweenStationsUI" as UI
+participant ":ConnectivityBetweenStationsController" as CTRL
+participant "Station\n:Station" as STATION
+participant "Railway Line\n:RailwayLine" as RAILWAY_LINE
+participant "Adjacency Matrix\n:ViewAdjacencyMatrixUI" as ADJ_MATRIX_UI
+participant "Transitive Matrix\n:ViewTransitiveMatrixUI" as TRANS_MATRIX_UI
+participant "Utils_MDISC" as UTILS
+
+activate Player
+    Player -> UI : Start connectivity analysis
+    activate UI
+    UI -> CTRL : new ConnectivityBetweenStationsController(stations, lines, scenario)
+    activate CTRL
+
+    group Station Selection - ORIGIN
+        loop until valid origin station selected
+            UI --> Player : Request origin station input
+            activate Player
+            Player -> UI : Enter origin station name
+            deactivate Player
+            UI -> CTRL : Validate origin station name
+            alt Invalid origin station
+                UI --> Player : Error message: Invalid station
+                activate Player
+                deactivate Player
+            else Valid origin station
+                UI -> CTRL : Save origin station
+                CTRL -> CTRL : Save origin station internally
+                CTRL --> UI : Origin station accepted
+            end
+        end
+    end
+
+    group Station Selection - DESTINATION
+        loop until valid destination station selected
+            UI --> Player : Request destination station input
+            activate Player
+            Player -> UI : Enter destination station name
+            deactivate Player
+            UI -> CTRL : Validate destination station name
+            alt Invalid destination station
+                UI --> Player : Error message: Invalid station
+                activate Player
+                deactivate Player
+            else Valid destination station
+                UI -> CTRL : Save destination station
+                CTRL -> CTRL : Save destination station internally
+                CTRL --> UI : Destination station accepted
+            end
+        end
+    end
+
+    group Connectivity Verification
+        UI -> CTRL : Filter railway lines by train type
+        CTRL -> CTRL : Filter railway lines (filterRailwayLinesType)
+        CTRL -> UTILS : buildAdjacencyMatrix(stationList, availableLines)
+        activate UTILS
+        UTILS --> CTRL : adjacencyMatrix
+        deactivate UTILS
+        CTRL -> ADJ_MATRIX_UI : Display adjacency matrix
+        CTRL -> CTRL : Calculate transitive closure matrix (getTransitiveClosureMatrix)
+        CTRL -> TRANS_MATRIX_UI : Display transitive closure matrix
+        CTRL -> CTRL : Verify transitive connectivity between stations (isConnectedTransitive)
+        alt Stations connected
+            CTRL --> UI : Stations are connected
+            UI --> Player : Display message: Stations are connected
+            activate Player
+            deactivate Player
+        else Stations not connected
+            CTRL --> UI : Stations are not connected
+            UI --> Player : Display message: Stations are not connected
+            activate Player
+            deactivate Player
+        end
+    end
+
+deactivate CTRL
+deactivate UI
+deactivate Player
+@enduml

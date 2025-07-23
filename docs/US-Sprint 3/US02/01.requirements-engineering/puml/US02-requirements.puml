@@ -1,0 +1,76 @@
+@startuml
+
+actor Editor
+participant ":System" as System
+title: System Sequence Diagram (SSD) - US02
+
+activate Editor
+
+Editor -> System : 1. Add an industry to the map
+activate System
+
+System -> System : 2.1 Check if a map is currently selected
+alt No map selected
+    System --> Editor : 2.2 Show error message
+    deactivate System
+    Editor -> System : 2.3 Select a map
+    activate System
+end
+
+System -> System : 3.1 Get list of available industry types
+note right of System
+AC1: The industry must be selected from the available industries.
+end note
+System --> Editor : 3.2 Display list of industry types
+deactivate System
+
+Editor -> System : 3.3 Select industry type
+activate System
+
+' Validating Industry Name
+loop Until valid industry name is provided
+    System --> Editor : Request industry name
+    Editor -> System : Enter industry name
+    System -> System : Check if name already exists
+    alt Name exists
+        System --> Editor : Error message: name already exists
+    else
+        System -> System : Set industry name
+    end
+end
+
+' Requesting and validating position
+loop Until valid position is provided
+    System --> Editor : Request position (X, Y)
+    Editor -> System : Enter position (X, Y)
+
+    System -> System : Validate map bounds
+    alt Position out of bounds
+        System --> Editor : Error: Position out of bounds
+    else
+        System -> System : Check if position is occupied
+        note right of System
+        AC2: Industries cannot overlap with each other.
+        end note
+        alt Position occupied
+            System --> Editor : Error: Position already occupied
+        else
+            System -> System : Set position
+        end
+    end
+end
+
+System -> System : Create Industry object
+System -> System : Add industry to map
+alt Success
+    System -> System : Save industry to repository
+    System -> System : Update occupied positions
+    System --> Editor : Industry added successfully
+else Failure
+    System --> Editor : Failed to add industry
+end
+
+deactivate System
+deactivate Editor
+
+@enduml

@@ -1,0 +1,28 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+autonumber
+
+actor "Editor" as EDT
+participant ":AddCityUI" as UI
+participant ":AddCityController" as CTRL
+
+activate EDT
+    activate UI
+        loop until valid name
+            UI --> EDT : ask for city name
+            EDT -> UI : enter nameCity
+            UI -> UI : check name
+            alt is invalid name
+                UI --> EDT : error message: invalid City name
+            else
+                UI -> CTRL : setCityName(nameCity)
+                activate CTRL
+                    CTRL -> CTRL : save nameCity
+                    CTRL --> UI : city name accepted
+                deactivate CTRL
+            end
+        end
+    deactivate UI
+deactivate EDT
+@enduml

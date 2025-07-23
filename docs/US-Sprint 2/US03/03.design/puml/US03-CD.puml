@@ -1,0 +1,166 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+skinparam linetype orto
+
+skinparam classAttributeIconSize 0
+
+left to right direction
+
+class AddCityUI {
+    - controller: AddCityController
+    - actualMap: Map
+
+    + AddCityUI(mapId : int)
+    + run() : void
+    - readNameCity() : boolean
+    - readPositionCity() : boolean
+    - chooseReadHouseBlocks() : boolean
+    - readAutomaticHouseBlocks() : void
+    - readManualHouseBlocks() : void
+}
+
+class AddCityController {
+    - mapRepository: MapRepository
+    - actualMap: Map
+    - city: City
+    - cityName: String
+    - positionCity: Position
+    - numberHouseBlocks: int
+    - houseBlockList: List<HouseBlock>
+
+    + AddCityController(idMap : int)
+    - getMapRepository() : void
+    + getActualMap() : Map
+    + getCity() : City
+    + setCity(city : City) : void
+    + getCityName() : String
+    + setCityName(cityName : String) : void
+    + setPositionCity(positionCity : Position) : void
+    + getHouseBlockList() : List<HouseBlock>
+    + setHouseBlockList(houseBlockList : List<HouseBlock>) : void
+    + getPositionX() : int
+    + getPositionY() : int
+    + getWidthMap() : int
+    + getHeightMap() : int
+    + getOccupiedPositionsMap() : List<Position>
+    + clearHouseBlockList() : void
+    + getNumberFreePositions() : int
+    + getNumberHouseBlocks() : int
+    + setNumberHouseBlocks(numberHouseBlocks : int) : void
+    + setAutomaticHouseBlocks() : void
+    + cityFarFromTheCentre(position : Position) : boolean
+    + addCityToMap() : boolean
+}
+
+class CityRepository {
+    - cities : List<City>
+
+    + addCity(city : City) : boolean
+}
+
+class MapRepository {
+    + getMapById(id : int) : Map
+}
+
+class HouseBlockRepository {
+    - houseBlocks : List<HouseBlock>
+
+    + addHouseBlock(houseBlock : HouseBlock) : boolean
+}
+
+class Repositories {
+    - Repositories()
+    + {static} getInstance()
+    + getCityRepository() : CityRepository
+    + getMapRepository() : MapRepository
+}
+
+class City {
+    - name : String
+    - position : Position
+    - id : int
+    - {static} counterCreatedCities : int
+    - houseBlocksPositions : List<Position>
+    - houseBlocks : List<HouseBlock>
+
+    + City(name : String, position : Position, houseBlocks : List<HouseBlock>, houseBlocksPositions : List<Position>)
+    + getName() : String
+    + getPosition() : Position
+    + getHouseBlocks() : List<HouseBlock>
+}
+
+class Map {
+    - cityRepository : CityRepository
+    - houseBlockRepository : HouseBlockRepository
+    - size : Size
+    - mapElementsUsed : List<MapElement>
+    - occupiedPositions : List<Position>
+
+    + getSize() : Size
+    + getOccupiedPositions() : List<Position>
+    + listAllOccupiedPositions() : void
+    + addElement(element : MapElement) : boolean
+}
+
+abstract class MapElement {
+    - position : Position
+    - occupiedPositions : List<Position>
+
+    MapElement(position : Position, occupiedPositions : List<Position>)
+    getPosition() : Position
+    setPosition(position : Position) : void
+    getOccupiedPositions() : List<Position>
+}
+
+class Position {
+    - x : int
+    - y : int
+
+    + Position(x : int, y : int)
+    + getX() : int
+    + getY() : int
+    + equalsPosition(position : Position) : boolean
+    + toString() : String
+}
+
+class HouseBlock {
+    - position : Position
+
+    + HouseBlock(position : Position)
+    getPosition() : Position
+}
+
+
+AddCityUI .> AddCityController
+AddCityUI .> Map
+
+AddCityController .> MapRepository
+AddCityController .> Map
+AddCityController .> City
+AddCityController .> Position
+AddCityController .> HouseBlock
+AddCityController .> Repositories
+
+Repositories -> "1" Repositories : instance
+Repositories --> "1" MapRepository: mapRepository
+Repositories --> "1" CityRepository: cityRepository
+Repositories --> "1" HouseBlockRepository: houseBlockRepository
+
+MapRepository --> "*" Map: maps
+
+CityRepository --> "*" City: cities
+
+Map .> HouseBlockRepository
+Map "1" --> "*" MapElement: contain
+Map "1" --> "*" City: contain
+Map "1" --> "1..*" Position: has
+
+City "1" --> "1..*" HouseBlock: contain
+City "0,1" --> "1..*" Position: has
+City --> MapElement: type of
+
+MapElement "0,1" --> "1..*" Position: has
+
+@enduml

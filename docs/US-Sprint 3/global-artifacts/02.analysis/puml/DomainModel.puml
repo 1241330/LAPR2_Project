@@ -1,0 +1,491 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+hide methods
+
+title Domain Model
+
+'_Others_directory
+class Inventory {
+    resources: List<Resource>
+}
+class Position {
+    x: Integer
+    y: Integer
+}
+class Size {
+    width: Double
+    height: Double
+}
+
+'City_directory
+class City extends MapElement {
+    id: Integer
+    name: String
+    position: Position
+    houseBlocks: List<HouseBlock>
+    houseBlocksPositions: List<Position>
+    counterCreatedCities: Integer
+}
+
+class HouseBlock {
+    cityName: String
+    position: Position
+    assignedStation: Station
+    productions: List<HouseBlockResource>
+    id: Integer
+    inventory: Inventory
+    updatedinventory: Boolean
+    consumableResources: List<ResourcesType>
+}
+
+
+'Event_directory
+class Event {
+    name: String
+    interval: Integer
+    nextGenerationDate: Integer
+}
+class ExportEvent extends Event {
+    association: StationAssociations
+    resourceType: ResourcesType
+    printFirstMenu: static boolean
+}
+class GenerationEvent extends Event {
+    stationAssociation: StationAssociations
+    resource: Resource
+    printFirstMenu: static boolean
+}
+class HistoricalEvent extends Event {
+}
+class RouteEvent extends Event {
+    simulation: Simulation
+    scenario: Scenario
+    activeStatus: boolean
+    route: Route
+    completePath: List<String>
+}
+class StartCarriageOperationEvent extends Event {
+    simulation: Simulation
+    carriage: Carriage
+    alertMessages: List<String>
+}
+class StartLocomotiveOperationEvent extends Event {
+    simulation: Simulation
+    locomotive: Locomotive
+    alertMessages: List<String>
+}
+class TransformingEvent extends Event {
+    station: Station
+    transformingResource: ResourcesType
+    printFirstMenu: static boolean
+}
+
+
+'FinancialResult_directory
+class YearFinancialResult {
+    year: Integer
+    earning: Integer
+    trackMaintenance: Integer
+    trainMaintenance: Integer
+    fuelCost: Integer
+}
+
+
+'Industry_directory
+class Industry extends MapElement {
+    id: Integer
+    name: String
+    type: IndustryType
+    assignedStation: Station
+    inventory: Inventory
+    updatedinventory: Boolean
+}
+enum IndustryType {
+    PRIMARY_SECTOR,
+    TRANSFORMING,
+    MIXED
+}
+class PrimaryIndustry extends Industry {
+    primaryResource: PrimaryResource
+    maxResources: Integer
+    intervalBetweenResourceGeneration: Integer
+    quantityProduced: Integer
+    clonedIndustryList: List<PrimaryIndustry>
+    scenarioName: String
+}
+class MixedIndustry extends Industry {
+    exportedResources: List<ResourcesType>
+    importedResources: List<ResourcesType>
+    transformedResources: List<ResourcesType>
+    clonedIndustryList: List<MixedIndustry>
+    scenarioName: String
+}
+class TransformingIndustry extends Industry {
+    transformingResource: TransformingResource
+    primaryResources: List<ResourcesType>
+    clonedIndustryList: List<TransformingIndustry>
+    scenarioName: String
+}
+
+
+'Map_directory
+class Map {
+    id: Integer
+    name: String
+    pixelSize: Size
+    kmSize: Size
+    lastNameUsed: String
+    mapElementsUsed: List<MapElement>
+    occupiedPositions: List<Position>
+    savedFileName: String
+}
+abstract class MapElement {
+    position: Position
+    occupiedPositions: List<Position>
+}
+
+
+'RailwayLine_directory
+class Node {
+    x: Integer
+    y: Integer
+    cost: Integer
+    estimate: Integer
+    parent: Node
+}
+class RailwayLine extends MapElement {
+    positionsRailwayLine: List<Position>
+    station1: Station
+    station2: Station
+    type: RailwayLineType
+    id: Integer
+    distance: Integer
+}
+enum RailwayLineType {
+    SINGLE_ELECTRIFIED
+    DOUBLE_ELECTRIFIED
+    SINGLE_NON_ELECTRIFIED
+    DOUBLE_NON_ELECTRIFIED
+    --
+    type: String
+    id: int
+    cost: int
+}
+
+
+'Resource_directory
+class HouseBlockResource extends ResourcesType {
+}
+class PrimaryResource extends ResourcesType {
+}
+class Resource {
+    resourceType: ResourcesType
+    quantity: Integer
+}
+class ResourcesType {
+    name: String
+    maxResources: Integer
+    intervalBetweenResourceGeneration: Integer
+    quantityProduced: Integer
+}
+class TransformingResource extends ResourcesType {
+    neededResources: List<ResourcesType>
+}
+
+
+'Scenario_directory
+class Scenario {
+    map: Map
+    name: String
+    industriesList: List<Industry>
+    industriesListInScenario: List<Industry>
+    houseBlockResourceList: List<HouseBlockResource>
+    availableLocomotiveList: List<Locomotive>
+    initialMoney: Integer
+    beginningDate: TimeDate
+    endDate: TimeDate
+    typeResourceList: List<ResourcesType>
+    simulationRepository: SimulationRepository
+}
+
+
+'Simulation_directory
+class PointOfRoute {
+    cargoToPick: List<ResourcesType>
+    station: Station
+    cargoMode: TypeOfCargoMode
+}
+class Route {
+    departureStation: Station
+    pointOfRouteList: List<PointOfRoute>
+    path: List<RailwayLine>
+    activeFlag: Boolean
+    assignedTrain: Train
+    name: String
+    electricFlag: Boolean
+    pointPathPosition: Integer
+    oldStatus: Boolean
+}
+class Simulation {
+    carriageRepository: CarriageRepository
+    scenario: Scenario
+    map: Map
+    currentTime: Integer
+    maxTime: Integer
+    converterMonthSecond: Integer
+    actualMoney: Integer
+    name: String
+    houseBlocks: List<HouseBlock>
+    industries: List<Industry>
+    stations: List<Station>
+    railwayLines: List<RailwayLine>
+    availableDateLocomotives: List<Locomotive>
+    availableDateCarriages: List<Carriage>
+    boughtLocomotives: List<Locomotive>
+    boughtCarriages: List<Carriage>
+    trainList: List<Train>
+    routes: List<Route>
+    financialResults: List<YearFinancialResult>
+}
+class TimeDate {
+    year: Integer
+    month: Integer
+    day: Integer
+}
+enum TypeOfCargoMode {
+    FULL
+    HALF
+    AVAILABLE
+}
+
+
+'Station_directory
+class Building {
+    type: BuildingType
+}
+enum BuildingType {
+    TELEGRAPH,
+    TELEPHONE,
+    SMALL_COFFEE,
+    LARGE_COFFEE,
+    CUSTOMS,
+    POST_OFFICE,
+    SMALL_HOTEL,
+    LARGE_HOTEL,
+    SILO,
+    LIQUID_STORAGE
+    --
+    identifier: Integer
+    constructionCost: Integer
+    replacesByID: Integer
+    operationYear: Integer
+    deleteFromAvailableID: Integer
+}
+class Station extends MapElement {
+    name: String
+    identifier: int
+    type: StationType
+    position: Position
+    stationRepository: StationRepository
+    mapRepository: MapRepository
+    repositories: Repositories
+    actualMap: Map
+    direction: String
+    buildings: List<Building>
+    associations: List<StationAssociations>
+    counterCreatedStations: static int
+    resourcesTypeRequested: List<ResourcesType>
+}
+interface StationAssociations {
+}
+enum StationType {
+    DEPOT,
+    STATION,
+    TERMINAL
+    --
+    constructionCost: Integer
+    influentialRadius: Integer
+}
+
+'Train_directory
+class Carriage extends Train {
+    name: String
+    imagePath: String
+    startYearOperation: int
+    acquisitionCost: int
+    maxResourceCapacity: int
+    inUse: boolean
+}
+class Fuel {
+    fuelType: FuelType
+}
+enum FuelType {
+    STEAM,
+    DIESEL,
+    ELECTRICITY
+}
+class Locomotive {
+    name: String
+    imagePath: String
+    power: Double
+    acceleration: Double
+    topSpeed: Double
+    startYearOperation: Integer
+    acquisitionPrice: Integer
+    fuelType: FuelType
+    railroadLineAssosiated: Integer
+    maxCarriages: Integer
+    inUse: Boolean
+    maintenanceCost: Integer
+}
+class Train {
+    locomotive: Locomotive
+    carriages: List<Carriage>
+    name: String
+    inventory: Inventory
+    maxInventorySpace: Integer
+    activeFlag: Boolean
+    acquisitionDate: TimeDate
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'------------
+'Relações
+'------------
+' Map
+Map "1" --> "*" MapElement : mapElementsUsed
+Map "1" --> "*" Position : occupiedPositions
+Map "1" --> "1" Size : kmSize
+
+' City
+City "1" --> "*" HouseBlock : houseBlocks
+City "1" --> "1" Position : position
+
+' HouseBlock
+HouseBlock "1" --> "1" Station : assignedStation
+HouseBlock "1" --> "*" HouseBlockResource : productions
+HouseBlock "1" --> "1" Inventory : inventory
+HouseBlock "1" --> "*" ResourcesType : consumableResources
+HouseBlock "1" --> "1" Position : position
+
+' Inventory
+Inventory "1" --> "*" Resource : resources
+
+' Resource
+Resource "1" --> "1" ResourcesType : resourceType
+
+' Industry
+Industry "1" --> "1" Station : assignedStation
+Industry "1" --> "1" Inventory : inventory
+Industry "1" --> "1" IndustryType : type
+Industry "1" --> "1" Position : position
+
+' PrimaryIndustry, MixedIndustry, TransformingIndustry já extendem Industry, não repetir ligação
+PrimaryIndustry "1" --> "1" PrimaryResource : primaryResource
+PrimaryIndustry "1" --> "*" PrimaryIndustry : clonedIndustryList
+MixedIndustry "1" --> "*" ResourcesType : Resource
+MixedIndustry "1" --> "*" MixedIndustry : clonedIndustryList
+TransformingIndustry "1" --> "1" TransformingResource : transformingResource
+TransformingIndustry "1" --> "*" ResourcesType : primaryResources
+TransformingIndustry "1" --> "*" TransformingIndustry : clonedIndustryList
+
+' Scenario
+Scenario "1" --> "1" Map : map
+Scenario "1" --> "*" Industry : industriesList
+Scenario "1" --> "*" HouseBlockResource : houseBlockResourceList
+Scenario "1" --> "*" Locomotive : availableLocomotiveList
+Scenario "1" --> "*" ResourcesType : typeResourceList
+Scenario "1" --> "1" TimeDate : beginningDate/endDate
+
+
+' Simulation
+Simulation "1" --> "1" Scenario : scenario
+Simulation "1" --> "*" HouseBlock : houseBlocks
+Simulation "1" --> "*" Industry : industries
+Simulation "1" --> "*" Station : stations
+Simulation "1" --> "*" RailwayLine : railwayLines
+Simulation "1" --> "*" Locomotive : availableDateLocomotives/boughtLocomotives
+Simulation "1" --> "*" Carriage : availableDateCarriages/boughtCarriages
+Simulation "1" --> "*" Train : trainList
+Simulation "1" --> "*" Route : routes
+Simulation "1" --> "*" YearFinancialResult : financialResults
+
+' Route
+Route "1" --> "1" Station : departureStation
+Route "1" --> "*" PointOfRoute : pointOfRouteList
+Route "1" --> "*" RailwayLine : path
+Route "1" --> "1" Train : assignedTrain
+
+' PointOfRoute
+PointOfRoute "1" --> "*" ResourcesType : cargoToPick
+PointOfRoute "1" --> "1" Station : station
+PointOfRoute "1" --> "1" TypeOfCargoMode : cargoMode
+
+' Station
+Station "1" --> "*" Building : buildings
+Station "1" --> "*" StationAssociations : associations
+Station "1" --> "*" ResourcesType : resourcesTypeRequested
+Station "1" --> "1" Position : position
+Station "1" --> "1" StationType : type
+
+' RailwayLine
+RailwayLine "1" --> "1" Station : station1
+RailwayLine "1" --> "1" Station : station2
+RailwayLine "1" --> "1" RailwayLineType : type
+RailwayLine "1" --> "*" Position : positionsRailwayLine
+
+' Train
+Train "1" --> "1" Locomotive : locomotive
+Train "1" --> "*" Carriage : carriages
+Train "1" --> "1" Inventory : inventory
+Train "1" --> "1" TimeDate : acquisitionDate
+
+' Locomotive
+Locomotive "1" --> "1" FuelType : fuelType
+
+' Building
+Building "1" --> "1" BuildingType : type
+
+' Fuel
+Fuel "1" --> "1" FuelType : fuelType
+
+' Eventos
+ExportEvent "1" --> "1" StationAssociations : association
+ExportEvent "1" --> "1" ResourcesType : resourceType
+GenerationEvent "1" --> "1" StationAssociations : stationAssociation
+GenerationEvent "1" --> "1" Resource : resource
+RouteEvent "1" --> "1" Simulation : simulation
+RouteEvent "1" --> "1" Scenario : scenario
+RouteEvent "1" --> "1" Route : route
+StartCarriageOperationEvent "1" --> "1" Simulation : simulation
+StartCarriageOperationEvent "1" --> "1" Carriage : carriage
+StartLocomotiveOperationEvent "1" --> "1" Simulation : simulation
+StartLocomotiveOperationEvent "1" --> "1" Locomotive : locomotive
+TransformingEvent "1" --> "1" Station : station
+TransformingEvent "1" --> "1" ResourcesType : transformingResource
+
+' Node
+Node "1" --> "0..1" Node : parent
+@enduml
+

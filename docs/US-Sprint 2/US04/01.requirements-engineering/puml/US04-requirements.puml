@@ -1,0 +1,52 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Editor" as EDT
+participant "System" as SYS
+
+activate EDT
+    EDT -> SYS : request to create a scenario
+    activate SYS
+    SYS -> SYS : upload list of maps
+    SYS --> EDT : show list of available maps
+    deactivate SYS
+    EDT -> SYS : select map (mapId)
+    activate SYS
+    SYS -> SYS : set map
+    group Define Ports and Resources
+        loop for each port
+            SYS --> EDT : request port type (import/export/transforming)
+            EDT -> SYS : select port type
+            SYS --> EDT : request associated resources
+            EDT -> SYS : select resources (name, type, quantity, etc)
+            SYS -> SYS : set port
+        end
+    end
+
+    ' Definition of available locomotion types
+    group Define Locomotion Types
+        SYS --> EDT : request available locomotion types (STEAM, DIESEL, ELECTRICITY)
+        EDT -> SYS : select locomotion types
+        SYS -> SYS : set locomotion type
+    end
+
+    ' Definition of industry generation factors
+    group Define Industry Generation Factors
+        SYS --> EDT : request generation factors (frequency, quantity, etc)
+        EDT -> SYS : input factors for each industry
+        SYS -> SYS : set generation factors
+    end
+
+    ' Definition of dates and initial money
+    SYS --> EDT : request start/end dates and initial money
+    deactivate SYS
+    EDT -> SYS : input dates and money
+    activate SYS
+    SYS -> SYS : set dates and money
+    SYS -> SYS : create scenario
+    SYS --> EDT : show success/error message
+deactivate EDT
+@enduml

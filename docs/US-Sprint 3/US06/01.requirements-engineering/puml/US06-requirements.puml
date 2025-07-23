@@ -1,0 +1,47 @@
+@startuml
+
+actor Player
+participant System
+title: System Sequence Diagram (SSD) - US06
+
+activate Player
+Player -> System: 1. Select a station upgrade tool
+activate System
+
+loop Until Station is valid
+    System --> Player: 2.0 Question which station to evolve
+    deactivate System
+
+    Player -> System: 2.1 Choose a station to evolve
+    activate System
+
+    System -> System: 2.2 Validate station selection
+end
+
+System --> Player: 3.0 Shows the list of buildings that can be upgraded
+Player -> System: 3.1 Choose a building to upgrade
+System -> System: 3.2 Check upgrade requirements
+System -> System: 3.3 Get current time and money
+System -> System: 3.4 Get existing buildings in station
+
+alt Not enough money
+    System --> Player: 4.1 Return error message: Not enough money
+else Building already exists
+    System --> Player: 4.1 Return error message: Building already exists
+else Building has already been replaced
+    System --> Player: 4.1 Return error message: Building already replaced
+else Building replaces another
+    System -> System: 4.2 Remove building to be replaced
+    System -> System: 4.3 Add new building
+    System -> System: 4.4 Deduct cost from player
+    System --> Player: 4.5 Return success message: Building replaced
+else Add new building
+    System -> System: 4.2 Add new building
+    System -> System: 4.3 Deduct cost from player
+    System --> Player: 4.4 Return success message: Building added
+end
+
+deactivate System
+deactivate Player
+
+@enduml

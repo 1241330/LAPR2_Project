@@ -1,0 +1,44 @@
+@startuml
+hide circle
+hide methods
+
+title: Relevant Domain Model Excerpt - US03
+
+class Editor {
+   username: Text
+   password: Text
+}
+
+class Map {
+   name: Text
+}
+
+class Size {
+   width: Integer
+   height: Integer
+}
+
+class City {
+   name: Text
+   houseBlocks: Integer
+}
+
+class Position {
+   Xposition: Integer
+   Yposition: Integer
+}
+class Cargo {
+    cargoType: Text
+}
+
+Editor "1" -- "1..*" Map : creates/edits >
+Editor "1" -- "*" City : adds >
+
+Map "*" -- "1" Size : has >
+Map "*" -- "1..*" Position : has >
+Map "*" - "*" City : has >
+
+City "0,1" -- "1" Position : has >
+City "*" - "*" Cargo : demands >
+
+@enduml

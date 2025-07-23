@@ -1,0 +1,147 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+skinparam classAttributeIconSize 0
+
+' --- Main Simulation Classes ---
+class Simulation {
+    - int currentTime
+    - int actualMoney
+    - List<Event> events
+    ...
+    + runSimulation(): void
+    + addEvent(event: Event): void
+    + getCurrentTime(): int
+    + getActualMoney(): int
+    ...()
+}
+
+abstract class Event {
+    - int interval
+    - String name
+    - int nextGenerationDate
+    ...
+    + trigger(): void
+    + getNextGenerationDate(): int
+    + getInterval(): int
+    ...()
+}
+
+class GenerationEvent {
+    - Station station
+    - Resource resource
+    ...
+    + trigger(): void
+    ...()
+}
+
+class ExportEvent {
+    - Station station
+    - ResourcesType resourceType
+    ...
+    + trigger(): void
+    ...()
+}
+
+class RouteEvent {
+    - Route route
+    - Simulation simulation
+    - Scenario scenario
+    ...
+    + trigger(): void
+    ...()
+}
+
+class Station {
+    - Inventory inventory
+    - List<StationAssociations> associations
+    ...
+    + addResourceToInventory(resource: Resource): int
+    + removeResourceFromInventory(resource: Resource): int
+    + existsResourceInInventory(resource: ResourcesType): boolean
+    + getResourcesTypeRequested(): List<ResourcesType>
+    ...()
+}
+
+class Inventory {
+    - List<Resource> resources
+    ...
+    + addResource(resource: Resource): int
+    + removeResource(resource: Resource): int
+    + getAllResources(): List<Resource>
+    ...()
+}
+
+class Resource {
+    - ResourcesType resourceType
+    - int quantity
+    ...
+    + getResourceType(): ResourcesType
+    + getQuantity(): int
+    ...()
+}
+
+class ResourcesType {
+    - String name
+    - int maxResources
+    ...
+    + getName(): String
+    + getMaxResources(): int
+    ...()
+}
+
+class Route {
+    - Train train
+    - List<Station> stations
+    ...
+    + getStations(): List<Station>
+    + getTrain(): Train
+    ...()
+}
+
+class Train {
+    - Inventory inventory
+    ...
+    + getInventory(): Inventory
+    ...()
+}
+
+class City
+class Industry
+
+' --- Relationships ---
+Simulation "1" *-- "*" Event : schedule
+Simulation ..> Station
+Simulation ..> Route : uses
+Simulation ..> City
+Simulation ..> Industry
+
+Event <|-- GenerationEvent
+Event <|-- ExportEvent
+Event <|-- RouteEvent
+
+GenerationEvent --> Station
+GenerationEvent --> Resource
+
+ExportEvent --> Station
+ExportEvent --> ResourcesType
+
+RouteEvent --> Route
+RouteEvent --> Simulation
+RouteEvent --> Scenario
+
+Station "1" --> "1" Inventory
+Station "1" --> "*" StationAssociations
+StationAssociations <|-- City
+StationAssociations <|-- Industry
+
+Inventory "1" *-- "*" Resource
+Resource --> ResourcesType
+
+Route "1" --> "*" Station
+Route "1" --> "1" Train
+
+Train "1" --> "1" Inventory
+
+@enduml

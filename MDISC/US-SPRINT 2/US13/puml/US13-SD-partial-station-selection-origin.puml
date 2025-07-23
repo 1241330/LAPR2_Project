@@ -1,0 +1,27 @@
+@startuml partial_origin_selection
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Player" as Player
+participant ":ConnectivityBetweenStationsUI" as UI
+participant ":ConnectivityBetweenStationsController" as CTRL
+
+activate Player
+    UI --> Player : Request origin station input
+    activate Player
+    Player -> UI : Enter origin station name
+    deactivate Player
+    UI -> CTRL : Validate origin station name
+    alt Invalid origin station
+        UI --> Player : Error message: Invalid station
+        activate Player
+        deactivate Player
+    else Valid origin station
+        UI -> CTRL : Save origin station
+        CTRL -> CTRL : Save origin station internally
+        CTRL --> UI : Origin station accepted
+    end
+deactivate Player
+@enduml

@@ -1,0 +1,36 @@
+@startuml
+left to right direction
+
+actor Editor
+actor Player
+
+rectangle "Use Cases" {
+    usecase "UC01: Create a map" as US01
+    usecase "UC02: Add an industry" as US02
+    usecase "UC03: Add a city" as US03
+    usecase "UC04: Create a scenario" as US04
+    usecase "UC05: Build a station" as US05
+    usecase "UC06: Upgrade a station" as US06
+    usecase "UC07: View station details" as US07
+    usecase "UC08: Build a railway line" as US08
+    usecase "UC09: Buy a locomotive" as US09
+    usecase "UC10: Assign train to route" as US10
+    usecase "UC11: List all trains" as US11
+    usecase "UC12: Create a simulator" as US12
+}
+
+Editor --> US01
+Editor --> US02
+Editor --> US03
+Editor --> US04
+
+Player --> US05
+Player --> US06
+Player --> US07
+Player --> US08
+Player --> US09
+Player --> US10
+Player --> US11
+Player --> US12
+
+@enduml

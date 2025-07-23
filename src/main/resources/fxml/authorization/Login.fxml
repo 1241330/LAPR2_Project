@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="700.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pt.ipp.isep.dei.ui.gui.authorization.LoginGUI">
+   <stylesheets>
+      <URL value="@../textFields.css" />
+        <URL value="@../buttons.css" />
+   </stylesheets>
+   <children>
+      <AnchorPane prefHeight="550.0" prefWidth="281.0" style="-fx-background-color: #8C7853;">
+         <children>
+            <ImageView fx:id="logoImageView" fitHeight="239.0" fitWidth="234.0" layoutX="13.0" layoutY="86.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../images/LogoMabec2.png" />
+               </image>
+            </ImageView>
+            <Label fx:id="contactLabel" layoutX="39.0" layoutY="387.0" prefHeight="22.0" prefWidth="128.0" text="Contact:" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="25.0" />
+               </font>
+            </Label>
+            <Label fx:id="phoneLabel" layoutX="39.0" layoutY="417.0" prefHeight="26.0" prefWidth="196.0" text="📞 +351 911 111 111" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="emailContactLabel" layoutX="39.0" layoutY="437.0" prefHeight="26.0" prefWidth="196.0" text="📧 MABEC@isep.ipp.pt" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+
+      <Label fx:id="emailLabel" layoutX="380.0" layoutY="213.0" text="Email:">
+         <font>
+            <Font size="22.0" />
+         </font>
+      </Label>
+
+      <TextField fx:id="loginEmailTextField" layoutX="380.0" layoutY="245.0" onAction="#handleEmailTextFieldEnter" prefHeight="26.0" prefWidth="222.0" promptText="Email">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </TextField>
+
+      <Label fx:id="passwordLabel" layoutX="380.0" layoutY="291.0" prefHeight="32.0" prefWidth="196.0" text="Password:">
+         <font>
+            <Font size="22.0" />
+         </font>
+      </Label>
+
+      <PasswordField fx:id="loginPasswordTextField" layoutX="380.0" layoutY="323.0" onAction="#handlePasswordTextFieldEnter" prefHeight="26.0" prefWidth="222.0" promptText="Password">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </PasswordField>
+
+      <Button fx:id="loginButton" layoutX="380.0" layoutY="401.0" mnemonicParsing="false" onAction="#handleLoginButton" prefHeight="5.0" prefWidth="222.0" style="-fx-background-color: #b39a6f;" text="Login" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Button>
+
+      <!-- New register button -->
+      <Button fx:id="registerButton" layoutX="344.0" layoutY="441.0" mnemonicParsing="false" onAction="#handleRegisterButton" onMouseEntered="#handleShowSelection" onMouseExited="#handleDontShowSelection" prefHeight="31.0" prefWidth="294.0" style="-fx-background-color: transparent; -fx-border-color: transparent;" text="Don't have an account? Register Here" textFill="#8C7853" underline="true">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+
+      <Label fx:id="loginLockerText" layoutX="441.0" layoutY="60.0" prefHeight="142.0" prefWidth="101.0" text="🔐" textFill="#b39a6f">
+         <font>
+            <Font size="96.0" />
+         </font>
+      </Label>
+
+      <Label fx:id="loginFailed" layoutX="380.0" layoutY="369.0" textFill="RED" />
+
+      <Button fx:id="backButton" layoutX="585.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleBackButton" rotate="180.0" style="-fx-background-color: transparent;" text="➱">
+         <font>
+            <Font size="43.0" />
+         </font>
+      </Button>
+   </children>
+</AnchorPane>

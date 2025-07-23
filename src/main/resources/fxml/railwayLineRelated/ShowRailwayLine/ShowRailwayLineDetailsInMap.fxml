@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="432.0" prefWidth="482.0" style="-fx-background-color: white; -fx-border-color: #8c7853; -fx-border-width: 5px;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pt.ipp.isep.dei.ui.gui.simulation.RailwayRelated.ShowRailwayLine.ShowRailwayLineDetailsInMapGUI">
+    <stylesheets>
+        <URL value="@../../textFields.css" />
+        <URL value="@../../buttons.css" />
+        <URL value="@../../table.css" />
+    </stylesheets>
+    <children>
+
+        <AnchorPane layoutX="24.0" layoutY="159.0" prefHeight="209.0" prefWidth="434.0" style="-fx-border-color: #b39a6f; -fx-border-width: 2; -fx-border-radius: 10; -fx-background-radius: 10;">
+            <children>
+                <Label fx:id="connectionNameLabel" layoutX="14.0" layoutY="12.0" prefHeight="27.0" prefWidth="390.0" text="Connection: -" textFill="#8C7853">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+
+                <Label fx:id="typeLabel" layoutX="14.0" layoutY="52.0" prefHeight="27.0" prefWidth="414.0" text="Type: -" textFill="#8C7853">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+
+                <Label fx:id="distanceLabel" layoutX="14.0" layoutY="92.0" prefHeight="27.0" prefWidth="408.0" text="Distance: -" textFill="#8C7853">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+
+                <Label fx:id="constructionDateLabel" layoutX="14.0" layoutY="132.0" prefHeight="27.0" prefWidth="408.0" text="Construction Date: -" textFill="#8C7853">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+            <Label fx:id="nextMaintenanceDateLabel" layoutX="14.0" layoutY="170.0" prefHeight="27.0" prefWidth="390.0" text="Next Maintenance Date: -" textFill="#8C7853">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            </children>
+        </AnchorPane>
+
+        <Label layoutX="79.0" layoutY="35.0" text="RAILWAY LINE" textFill="#8C7853">
+            <font>
+                <Font name="Algerian" size="48.0" />
+            </font>
+        </Label>
+
+        <Label layoutX="145.0" layoutY="78.0" text="details" textFill="#8C7853">
+            <font>
+                <Font name="Algerian" size="48.0" />
+            </font>
+        </Label>
+
+        <Button layoutX="322.0" layoutY="380.0" onAction="#handleClose" prefHeight="37.0" prefWidth="135.0" style="-fx-background-color: #b39a6f; -fx-text-fill: white;" text="Close">
+            <font>
+                <Font name="System Bold" size="16.0" />
+            </font>
+        </Button>
+      <Separator layoutX="40.0" layoutY="130.0" prefHeight="6.0" prefWidth="402.0" style="-fx-background-color: #b39a6f; -fx-border-color: #b39a6f; -fx-border-width: 1;" />
+
+    </children>
+</AnchorPane>

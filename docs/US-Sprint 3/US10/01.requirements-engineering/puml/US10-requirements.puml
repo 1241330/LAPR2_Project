@@ -1,0 +1,76 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title System Sequence Diagram (SSD) - US10 - Assign train to route
+
+autonumber
+
+actor "Player" as Player
+participant ":System" as System
+
+activate Player
+Player -> System : request to choose a train
+activate System
+System -> System : loads existing trains
+System --> Player : list the trains (US11)
+
+loop While the train isn't valid
+    System --> Player : request the train to use
+    deactivate System
+    Player -> System : select train (assuming there is at least 1 train available)
+    activate System
+    alt Valid train
+        System -> System : save the choice of train
+        System --> Player : returns confirmation
+    else Invalid train
+        System --> Player : returns message error and continues to show the list
+    end
+end
+deactivate System
+
+Player -> System : request to create a route
+activate System
+System -> System : loads existing stations and possible cargo
+System --> Player : list available stations (US7) and request for station selection
+deactivate System
+
+Player -> System : select start station (assuming there are at least 2 stations)
+activate System
+System -> System : validate selected station
+System --> Player : request which cargo should be picked up
+deactivate System
+
+Player -> System : select cargo for the respective station
+activate System
+System -> System : assign cargo to station
+
+loop While the player hasn't finished the selection operation
+    System --> Player : lists the remaining stations and request to select a station
+    deactivate System
+    Player -> System : select available station
+    activate System
+    alt There is a railway line between the last 2 selected stations
+        System -> System : save the choice of station
+        System --> Player : returns confirmation
+        System -> System : check cargo availability at stations
+        System --> Player : request which cargo should be picked up
+        deactivate System
+        Player -> System : select cargo for the respective station
+        activate System
+        System -> System : validate and assign cargo
+        System --> Player : returns confirmation
+    else There isn't a railway line
+        System --> Player : returns message error
+        System --> Player : continues to show the list and request a new station
+    end
+end
+
+System -> System : define generating rate
+System -> System : save the route with selected train, stations, and cargo
+System --> Player : confirms successful assignment
+deactivate System
+deactivate Player
+
+@enduml

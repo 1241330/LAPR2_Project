@@ -1,0 +1,50 @@
+@startuml industry_type_selection
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Editor" as EDT
+participant ":AddIndustryUI" as UI
+participant ":AddIndustryController" as CTRL
+participant "Repositories" as REPOS
+participant "repositories\n:Repositories" as REPOS_SINGLETON
+participant "mapRepository\n:MapRepository" as MAP_REPO
+participant "actualMap\n:Map" as MAP
+
+activate EDT
+EDT -> UI : start AddIndustryUI(mapId)
+activate UI
+UI -> CTRL : new AddIndustryController(mapId)
+activate CTRL
+
+CTRL -> REPOS : getInstance()
+activate REPOS
+REPOS --> CTRL : repositories
+deactivate REPOS
+
+CTRL -> REPOS_SINGLETON : getMapRepository()
+activate REPOS_SINGLETON
+REPOS_SINGLETON --> CTRL : mapRepository
+deactivate REPOS_SINGLETON
+
+CTRL -> MAP_REPO : getMapById(mapId)
+activate MAP_REPO
+MAP_REPO -> MAP : find map by id
+MAP_REPO --> CTRL : return actualMap
+deactivate MAP_REPO
+
+CTRL --> UI : return actualMap
+deactivate CTRL
+
+group Industry Type Selection
+    UI --> EDT : ask for industry type
+    activate EDT
+    EDT -> UI : select industryTypeDesc
+    deactivate EDT
+    UI -> CTRL : getAllIndustryTypes()
+    activate CTRL
+    CTRL --> UI : list of industry types
+    deactivate CTRL
+end
+@enduml

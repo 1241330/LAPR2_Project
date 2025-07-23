@@ -1,0 +1,116 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Editor" as EDT
+participant "System" as SYS
+
+activate EDT
+    EDT -> SYS : request create a scenario
+    activate SYS
+    SYS -> SYS : upload map
+    group City Name Input
+        loop until valid name
+            SYS --> EDT : ask for city name
+            EDT -> SYS : enter nameCity
+            SYS -> SYS : check name
+            alt is invalid name
+                SYS --> EDT : error message: invalid City name
+            else
+                SYS -> SYS : save city name
+                SYS --> EDT : success message: city name accepted
+            end
+        end
+    end
+    group City Position Input
+        loop until city position is valid
+            loop until valid X value
+                SYS --> EDT : ask for city X position
+                EDT -> SYS : enter X
+                SYS -> SYS : get map width
+                alt (0 < X < mapWidth)
+                    SYS -> SYS : save X value
+                else
+                    SYS --> EDT : error message: invalid X value
+                end
+            end
+            loop until valid Y value
+                SYS --> EDT : ask for city Y position
+                EDT -> SYS : enter Y
+                SYS -> SYS : get map height
+                alt (0 < Y < mapHeight)
+                    SYS -> SYS : save yValue
+                else
+                    SYS --> EDT : error message: invalid Y value
+                end
+            end
+            SYS -> SYS : create position(X, Y)
+            SYS -> SYS : get occupiedPositions
+            alt position occupied
+                SYS --> EDT : Error message: Position already occupied
+            else
+                SYS -> SYS : save position city
+                SYS --> EDT : success message: city position accepted
+            end
+        end
+    end
+    group House Blocks Input Mode
+            SYS --> EDT : ask automatic or manual house blocks input
+            deactivate SYS
+            EDT -> SYS : choose mode
+            activate SYS
+            alt automatic mode
+                SYS -> SYS : get numberFreePositions
+                loop until number house blocks is valid (1 < n < nFreePositions)
+                    SYS --> EDT : ask number of house blocks
+                    EDT -> SYS : enter number
+                    alt invalid value
+                        SYS --> EDT : Error message: invalid value
+                    else
+                        SYS -> SYS : save number of House Blocks
+                    end
+                end
+                SYS -> SYS : set automatic House Blocks
+
+            else manual mode
+                loop until valid X value
+                    SYS --> EDT : ask for X value
+                    EDT -> SYS : enter X
+                    alt (0 < X < mapWidth)
+                        SYS -> SYS : save X value
+                    else
+                        SYS --> EDT : error message: invalid X value
+                    end
+                end
+                loop until valid Y value
+                    SYS --> EDT : ask for Y value
+                    EDT -> SYS : enter Y
+                    alt (0 < X < mapHeight)
+                        SYS -> SYS : save Y value
+                    else
+                        SYS --> EDT : error message: invalid Y value
+                    end
+                end
+                SYS -> SYS : create position(X, Y)
+                alt position occupied
+                    SYS --> EDT : Error message: Position already occupied
+                else
+                    SYS -> SYS : save position house block
+                    SYS -> SYS : create house block
+                    SYS -> SYS : add house block to list
+                end
+            end
+        end
+
+    group Add City to Map
+        SYS -> SYS : create city
+        alt city created
+            SYS --> EDT: shows message: Add city to he map
+        else
+            SYS --> EDT: shows message: Don't add city to the map
+        end
+    end
+deactivate EDT
+@enduml

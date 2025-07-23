@@ -1,0 +1,167 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+left to right direction
+
+class CreateScenarioController {
+    - scenario: Scenario
+    - mapRepository: MapRepository
+    - locomotiveRepository: LocomotiveRepository
+    - houseBlockResourceRepository: HouseBlockResourceRepository
+    - primaryResourceRepository: PrimaryResourceRepository
+    - transformingResourceRepository: TransformingResourceRepository
+    - houseBlockResourceList: List<HouseBlockResource>
+    - primaryResourceList: List<PrimaryResource>
+    - transformingResourceList: List<TransformingResource>
+    - allResourceListIndustry: List<ResourcesType>
+    - allResourcesList: List<ResourcesType>
+    - actualMap: Map
+    - name: String
+    - initialDate: TimeDate
+    - endDate: TimeDate
+    - initialMoney: int
+    - industriesList: List<Industry>
+    - fuelTypeList: List<FuelType>
+    - resourceListImport: List<ResourcesType>
+    - resourceListExport: List<ResourcesType>
+    - resourceListTransforming: List<ResourcesType>
+    - availableFuelTypeList: List<FuelType>
+    - availableHouseBlockResourceList: List<HouseBlockResource>
+    + createScenario() : void
+    + removeScenario() : void
+    + setLocomotiveListAvailable() : void
+    + clearLocomotiveListAvailable() : void
+    + setResourcesListScenario() : void
+    + setHouseBlockResourceListScenario() : void
+    + setHouseBlockResourceListScenarioDefault() : void
+    + setResourceInPrimaryIndustry(industry, iResourceGenerated) : void
+    + setResourceInTransformingIndustry(industry, iResourceTransforming) : void
+    + initializeMixedIndustry(industry) : void
+    + addImportMixedIndustry(industry, iResource) : void
+    + addExportMixedIndustry(industry, iResource) : void
+    + addTransformingMixedIndustry(industry, iResource) : void
+}
+
+class Scenario {
+    - map: Map
+    - name: String
+    - citiesList: List<City>
+    - industriesList: List<Industry>
+    - industriesListInScenario: List<Industry>
+    - houseBlockResourceList: List<HouseBlockResource>
+    - availableLocomotiveList: List<Locomotive>
+    - boughtLocomotives: List<Locomotive>
+    - initialMoney: int
+    - beginningDate: TimeDate
+    - endDate: TimeDate
+    - typeResourceList: List<ResourcesType>
+    - boughtCarriages: List<Carriage>
+    - trainList: List<Train>
+    + addLocomotive(locomotive: Locomotive) : void
+    + clearAvailableLocomotiveList() : void
+    + setTypeResourceList(typeResourceList: List<ResourcesType>) : void
+    + setHouseBlockResourceList(houseBlockResourceList: List<HouseBlockResource>) : void
+    + addPrimaryIndustryScenarioByIndustryMap(primaryIndustry: PrimaryIndustry) : void
+    + addTransformingIndustryScenarioByIndustryMap(transformingIndustry: TransformingIndustry) : void
+    + addMixedIndustryScenarioByIndustryMap(mixedIndustry: MixedIndustry) : void
+}
+
+class Repositories {
+    - instance: Repositories
+    - authenticationRepository: AuthenticationRepository
+    - locomotiveRepository: LocomotiveRepository
+    - carriageRepository: CarriageRepository
+    - mapRepository: MapRepository
+    - primaryResourceRepository: PrimaryResourceRepository
+    - transformingResourceRepository: TransformingResourceRepository
+    - houseBlockResourceRepository: HouseBlockResourceRepository
+    + {static} getInstance() : Repositories
+    + getMapRepository() : MapRepository
+    + getLocomotiveRepository() : LocomotiveRepository
+    + getPrimaryResourceRepository() : PrimaryResourceRepository
+    + getTransformingTypeRepository() : TransformingResourceRepository
+    + getHouseBlockResourceRepository() : HouseBlockResourceRepository
+}
+
+class Map {
+    - citiesList: List<City>
+    - industriesList: List<Industry>
+    + getCitiesList() : List<City>
+    + getIndustriesList() : List<Industry>
+    + addScenario(scenario: Scenario) : void
+    + removeScenario(scenario: Scenario) : void
+}
+
+class Locomotive {
+    - name: String
+    - power: double
+    - acceleration: double
+    - topSpeed: double
+    - startYearOperation: int
+    - acquisitionPrice: int
+    - fuelType: FuelType
+    - railroadLineAssosiated: int
+    - maxCarriages: int
+}
+
+class ResourcesType {
+    - name: String
+    - maxResources: int
+    - intervalBetweenResourceGeneration: int
+    - quantityProduced: int
+}
+
+class PrimaryResource
+class HouseBlockResource
+class TransformingResource {
+    - neededResources: List<ResourcesType>
+}
+
+class Industry
+class PrimaryIndustry
+class TransformingIndustry
+class MixedIndustry
+
+class TimeDate {
+    - year: int
+    - month: int
+}
+
+PrimaryResource --|> ResourcesType
+HouseBlockResource --|> ResourcesType
+TransformingResource --|> ResourcesType
+TransformingResource "1" o-- "*" ResourcesType : needs
+
+PrimaryIndustry --|> Industry
+TransformingIndustry --|> Industry
+MixedIndustry --|> Industry
+
+Scenario "1" --> "1" Map : uses
+Scenario "1" --> "*" Locomotive : contains
+Scenario "1" --> "*" Industry : contains
+Scenario "1" --> "*" HouseBlockResource : contains
+Scenario "1" --> "*" ResourcesType : manages
+Scenario "1" --> "1" TimeDate : start/end date
+
+Map "1" --> "*" Industry : contains
+Map "1" --> "*" City : contains
+
+Repositories -> "1" Repositories : instance
+Repositories "1" --> "1" MapRepository : accesses
+Repositories "1" --> "1" LocomotiveRepository : accesses
+Repositories "1" --> "1" PrimaryResourceRepository : accesses
+Repositories "1" --> "1" TransformingResourceRepository : accesses
+Repositories "1" --> "1" HouseBlockResourceRepository : accesses
+
+CreateScenarioController "1" --> "1" Scenario : manages
+CreateScenarioController "1" --> "1" Map : selects
+CreateScenarioController "1" --> "*" Industry : sets
+CreateScenarioController "1" --> "*" ResourcesType : uses
+CreateScenarioController "1" --> "*" HouseBlockResource : configures
+CreateScenarioController "1" --> "*" PrimaryResource : configures
+CreateScenarioController "1" --> "*" TransformingResource : configures
+CreateScenarioController "1" --> "1" TimeDate : defines period
+CreateScenarioController "1" --> "1" Repositories : accesses
+
+@enduml

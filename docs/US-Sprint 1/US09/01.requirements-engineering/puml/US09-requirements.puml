@@ -1,0 +1,40 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title System Sequence Diagram (SSD) - US09 - Buy a locomotive
+
+autonumber
+
+actor Player
+
+participant ":System" as System
+activate Player
+
+Player -> System :Request to buy a locomotive
+activate System
+System -> System :(AC1) Check scenario
+System -> System :(AC1) Check date
+System -> System :List available locomotives
+System --> Player :Returns list of locomotives
+deactivate System
+Player -> System :Select locomotive
+activate System
+
+System -> System :Check if player has enough money
+
+alt No money
+     System --> Player :Display "Insufficient money" error
+else Money available
+     System --> Player :Buy locomotive
+end
+
+
+activate System
+System -> System :Take money from the player
+System -> System :Add locomotive to player's fleet
+System -> Player :Display "Purchase successful" message
+deactivate System
+
+@enduml

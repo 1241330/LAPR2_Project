@@ -1,0 +1,74 @@
+@startuml
+
+actor Player
+participant System
+title: System Sequence Diagram (SSD) - US05
+
+
+activate Player
+Player -> System: 1. Select Station Build Tool
+activate System
+loop Until Building Location is Valid
+    System --> Player: 2.1 Ask for the Building location
+    deactivate System
+    Player -> System: 2.2 Select location for station
+
+    activate System
+    System -> System: 3. (AC01) Check for overlap
+
+    alt Overlap exists
+        System --> Player: 4.1 Display error message
+
+    else Overlap doesn't exist
+
+        System --> Player: 4.2 Return success message
+    end
+end
+
+loop Until Name is accepted
+    System --> Player: 5.0 Propose a name for the station
+    deactivate System
+
+    alt doesn't accept name
+        Player -> System: 5.1 Doesn't accept the name
+
+    else accept name
+        Player -> System: 5.2 Accept the name
+        activate System
+    end
+end
+
+loop Until type of Station is valid
+    System --> Player: 6.0 What is the type of the Station?
+    deactivate System
+
+    Player -> System: 6.1 Gives the type
+    activate System
+    System -> System: 6.2 Verify if Station Type is valid
+
+    alt Invalid type of station
+        System --> Player: 6.3 Return Error message
+    else Valid Type of station
+        System -> System: 6.4 Accept the name
+    end
+end
+
+
+loop Until center is valid
+    System --> Player: 7.0 Ask where the center should be
+    deactivate System
+    Player -> System: 7.1 Gives the center location
+    activate System
+    System -> System: 7.2 Verify if center is valid
+
+    alt Doesn't accept the center
+        System --> Player: 7.3.1 Return Error message
+
+
+    else Accept the center
+        System --> Player: 7.3.2 Return success message
+        deactivate System
+    end
+end
+
+@enduml

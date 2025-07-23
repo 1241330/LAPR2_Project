@@ -1,0 +1,130 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Player" as PLY
+participant ":BuyLocomotiveUI" as UI
+participant ":BuyTrainPartController" as CTRL
+participant "Repositories" as REPOS
+participant "repositories\n:Repositories" as REPOS_INST
+participant ":Locomotive" as LOC
+participant "locomotiveRepository\n:LocomotiveRepository" as LOC_REP_INST
+participant ":Scenario" as SCENARIO
+participant ":Simulation" as SIMULATION
+participant ":LocomotiveMapper" as MAPPER
+
+participant "locomotiveList : List<Locomotive>" as LOC_LIST
+participant "locomotiveDtoList : List<LocomotiveDTO>" as LOC_DTO_LIST
+participant "locomotiveDTO : LocomotiveDTO" as LOC_DTO
+
+activate PLY
+    PLY -> UI : requests to buy a locomotive
+    activate UI
+    UI -> CTRL : BuyTrainPartController(scenario, simulation)
+    activate CTRL
+
+    group Retrieve and Filter Locomotives
+        CTRL -> REPOS : getInstance()
+        activate REPOS
+        REPOS --> CTRL : repositories
+        deactivate REPOS
+
+        CTRL -> REPOS_INST : getLocomotiveRepository()
+        activate REPOS_INST
+        REPOS_INST --> CTRL : locomotiveRepository
+        deactivate REPOS_INST
+
+        CTRL -> LOC  : getAllLocomotives()
+        activate LOC
+        LOC -> LOC_LIST** : create()
+        LOC --> CTRL : allLocomotivesList
+
+        deactivate LOC
+
+        CTRL -> SCENARIO : getAvailableLocomotiveList()
+        activate SCENARIO
+        SCENARIO --> CTRL : availableLocomotives
+        deactivate SCENARIO
+
+        CTRL -> SIMULATION : getCurrentTime()
+        activate SIMULATION
+        SIMULATION --> CTRL : currentTime
+        deactivate SIMULATION
+
+        CTRL -> CTRL : filter locomotives by date
+    end
+
+    group Map to DTO
+        CTRL -> MAPPER : toDTO(locomotiveList)
+        activate MAPPER
+
+            MAPPER -> LOC_DTO_LIST** : create()
+
+            loop for each locomotive in locomotiveList
+                MAPPER -> LOC_LIST : get(index)
+                activate LOC_LIST
+                deactivate LOC_LIST
+
+                MAPPER -> MAPPER : dto = toDTO(locomotive)
+                activate MAPPER
+                deactivate MAPPER
+
+                MAPPER -> LOC_DTO** : create()
+                MAPPER -> LOC_DTO_LIST : add(locomotiveDto)
+                activate LOC_DTO_LIST
+                deactivate LOC_DTO_LIST
+            end loop
+
+            MAPPER --> CTRL : locomotiveDtoList
+        deactivate MAPPER
+
+        CTRL --> UI : locomotiveDtoList
+    end
+
+    group Select Locomotive
+        UI --> PLY : show available locomotives
+
+        PLY -> UI : select locomotive
+
+
+        UI -> CTRL : buyLocomotive(selectedLocomotiveDTO)
+    end
+
+    group Validate Purchase
+        CTRL -> SIMULATION : getActualMoney()
+        activate SIMULATION
+        SIMULATION --> CTRL : actualMoney
+        deactivate SIMULATION
+
+        alt Not enough money
+            CTRL --> UI : "You do not have enough money"
+            UI --> PLY : showError("Not enough money")
+
+            deactivate UI
+            return
+        else Sufficient money
+            CTRL -> SIMULATION : setActualMoney(actualMoney - price)
+
+            activate SIMULATION
+            SIMULATION --> CTRL : actualMoneyUpdated
+            deactivate SIMULATION
+            CTRL -> SCENARIO : addBoughtLocomotive(selectedLocomotiveDTO)
+            activate SCENARIO
+            SCENARIO --> CTRL : locomotiveAdded
+            deactivate SCENARIO
+
+            CTRL --> UI : "Locomotive bought successfully"
+            activate UI
+
+            UI --> PLY : showSuccess("Locomotive bought")
+            deactivate UI
+
+        end
+    end
+
+deactivate CTRL
+deactivate UI
+deactivate PLY
+@enduml

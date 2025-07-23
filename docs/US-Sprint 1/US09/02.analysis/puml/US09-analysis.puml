@@ -1,0 +1,38 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+hide circle
+hide methods
+
+title Relevant Domain Model Excerpt - US09
+
+class Player {
+    username: Text
+    password: Text
+}
+
+class Scenario {
+  scenarioType: Text
+  simulationPeriod: Integer
+}
+
+class Locomotive {
+    name: Text
+    power: Decimal
+    acceleration: Decimal
+    topSpeed: Decimal
+    startYearOperation: Integer
+    acquisitionPrice: Decimal
+}
+
+'Player Connections
+Player "1" -- "*" Locomotive: buy / owns >
+
+'Scenario Connections
+Scenario "*" -- "*" Locomotive: filter the possible >
+
+
+@enduml

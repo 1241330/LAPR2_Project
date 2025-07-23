@@ -1,0 +1,38 @@
+@startuml
+
+actor Player
+participant System
+title: System Sequence Diagram (SSD) - US06
+
+
+activate Player
+Player -> System: 1. Select a station upgrade tool
+activate System
+
+loop Until Station is valid
+    System --> Player: 2.0 Question which station to evolve
+    deactivate System
+
+    Player -> System: 2.1 Choose a station to evolve
+    activate System
+
+    System -> System: 2.2 Validate station selection
+end
+
+System --> Player: 3.0 Shows the list of buildings that can be upgraded
+deactivate System
+Player -> System: 3.1 Choose a building to upgrade
+activate System
+System -> System: 3.2 Check upgrade requirements
+alt Valid Building Upgrade requirements
+
+    System -> System: 3.3 Apply upgrade to station
+    System --> Player: 4.1 Return success message
+
+    else Invalid Building Upgrade requirements
+    System --> Player: 4.1 Return error message
+    deactivate System
+
+end
+
+@enduml

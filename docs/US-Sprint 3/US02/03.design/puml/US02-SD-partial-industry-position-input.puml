@@ -1,0 +1,76 @@
+@startuml industry_position_input
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Editor" as EDT
+participant ":AddIndustryUI" as UI
+participant ":AddIndustryController" as CTRL
+participant "actualMap\n:Map" as MAP
+participant "position\n:Position" as POS
+participant "mapElement\n:MapElement" as MAP_ELEM
+
+group Industry Position Input
+    loop until valid position
+        UI --> EDT : ask for X position
+        activate EDT
+        EDT -> UI : enter X
+        deactivate EDT
+
+        UI --> EDT : ask for Y position
+        activate EDT
+        EDT -> UI : enter Y
+        deactivate EDT
+
+        UI -> CTRL : getWidthMap()
+        activate CTRL
+        CTRL -> MAP : getSize()
+        activate MAP
+        MAP -> MAP : getWidth()
+        MAP --> CTRL : mapWidth
+        deactivate MAP
+        CTRL --> UI : mapWidth
+        deactivate CTRL
+
+        UI -> CTRL : getHeightMap()
+        activate CTRL
+        CTRL -> MAP : getSize()
+        activate MAP
+        MAP -> MAP : getHeight()
+        MAP --> CTRL : mapHeight
+        deactivate MAP
+        CTRL --> UI : mapHeight
+        deactivate CTRL
+
+        alt X or Y out of bounds
+            UI --> EDT : error message: invalid position
+        else
+            UI -> POS : new Position(X-1, Y-1)
+            UI -> CTRL : getOccupiedPositions()
+            activate CTRL
+            CTRL -> MAP : getOccupiedPositions()
+            activate MAP
+            MAP -> MAP : listAllOccupiedPositions()
+            MAP -> MAP : clear occupiedPositions
+            loop for each mapElement
+                MAP -> MAP_ELEM : getOccupiedPositions()
+                activate MAP_ELEM
+                MAP_ELEM --> MAP : occupied positions
+                deactivate MAP_ELEM
+                MAP -> MAP : add occupied positions
+            end
+            MAP --> CTRL : occupiedPositions list
+            deactivate MAP
+            CTRL --> UI : occupiedPositions
+            deactivate CTRL
+
+            alt position occupied
+                UI --> EDT : error message: position occupied
+            else
+                UI -> CTRL : setPosition(position)
+            end
+        end
+    end
+end
+@enduml

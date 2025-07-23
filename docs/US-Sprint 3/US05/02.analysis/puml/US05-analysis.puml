@@ -1,0 +1,47 @@
+@startuml
+
+hide circle
+hide methods
+title: Relevant Domain Model Excerpt - US05
+
+
+class Player {
+    username: Text
+    password: Text
+}
+
+class Map {
+   name: Text
+}
+
+class Size {
+   width: Integer
+   height: Integer
+}
+
+
+class Station {
+  name: Text
+  constructionCosts: Decimal
+  stationType: Type
+}
+
+class Position {
+   Xposition: Integer
+   Yposition: Integer
+}
+
+'Player Connections
+Player "1" -- "*" Map : has >
+Player "1" -- "*" Station : build / manages >
+
+'Map Connections
+Map "*" -- "1" Size : has >
+Map "*" - "*" Station : has >
+Map "*" -- "1..*" Position : has >
+
+'Station Connections
+Station "*" -- "1" Size : has >
+Station "0,1" --- "1" Position : has >
+
+@enduml

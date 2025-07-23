@@ -1,0 +1,112 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+hide methods
+
+title Relevant Domain Model excerpt for US10 - Assign train to route
+
+' ============= CLASS's =============
+
+class Player {
+    username: Text
+    password: Text
+}
+
+class Train {
+    name: Text
+    startYearOperation: Integer
+    acquisitionPrice: Decimal
+}
+
+class Locomotive {
+    name: Text
+    power: Decimal
+    acceleration: Decimal
+    topSpeed: Decimal
+    startYearOperation: Integer
+    acquisitionPrice: Decimal
+}
+
+class Carriage {
+    name: Text
+    startYearOperation: Integer
+}
+
+class Route {
+    name: Text
+    routeType: Text
+}
+
+class Cargo {
+    cargoType: Text
+}
+
+class Fuel {
+  fuelType: Type
+}
+
+class Station {
+  name: Text
+  constructionCosts: Decimal
+  stationType: Type
+}
+
+class Size {
+   width: Integer
+   height: Integer
+}
+
+class Position {
+   Xposition: Integer
+   Yposition: Integer
+}
+
+' ============= INTERFACE's =============
+
+interface FuelType {
+    Steam
+    Diesel
+    Electricity
+}
+
+interface StationType {
+    Depots
+    Stations
+    Terminals
+}
+
+' ============ RELATIONSHIP's ============
+
+'Player connections
+Player "1    " - " *   " Station : build / manages >
+Player "1" - "*" Train : owns >
+Player "1 " - " *    " Route : creates >
+Player "1 " -- "*" Locomotive: buy / owns >
+Player "1" -- "*" Carriage: owns >
+
+'Train connections
+Train "0,1  " -- "*" Cargo : has >
+Train "*" -- "1    " Fuel : moves with >
+Train "  0,1" -- "1,2  " Locomotive : consists of >
+Train "0,1     " -- "1..*" Carriage : consists of >
+Train "*" -- "1" Route : assigned to >
+Train "0,1" -- "*" Position : has >
+
+'route connections
+Route "*" -- "*" Cargo : assigned to >
+Route " * " -- " 2..* " Station : goes through >
+
+'Fuel connections
+Fuel " * " -- "1 " FuelType : has >
+Fuel "1     " -- " *" Locomotive : powers >
+
+'Station connections
+Station "*" - "*" Cargo : assigned to >
+Station "*" -left "1" StationType : has >
+Station "0,1" -- "1" Position : has >
+Station " * " -- "1 " Size : has >
+
+@enduml

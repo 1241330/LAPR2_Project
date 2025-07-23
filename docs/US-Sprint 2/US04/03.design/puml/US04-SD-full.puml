@@ -1,0 +1,167 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Editor" as EDT
+participant ":CreateScenarioUI" as UI
+participant ":CreateScenarioController" as CTRL
+participant "Repositories" as REPOS
+participant "repositories\n:Repositories" as REPOS_SINGLETON
+participant "mapRepository\n:MapRepository" as MAP_REPO
+participant "scenarioRepository\n:ScenarioRepository" as SCENARIO_REPO
+participant "industryRepository\n:IndustryRepository" as IND_REPO
+participant "primaryResourceRepository\n:PrimaryResourceRepository" as PRIM_RES_REPO
+participant "transformingResourceRepository\n:TransformingResourceRepository" as TRANSF_RES_REPO
+participant "houseBlockResourceRepository\n:HouseBlockResourceRepository" as HB_RES_REPO
+participant "actualMap\n:Map" as MAP
+participant "scenario\n:Scenario" as SCENARIO
+
+activate EDT
+    EDT -> UI : start CreateScenarioUI()
+    activate UI
+    UI -> CTRL** : new CreateScenarioController()
+    activate CTRL
+
+    ' Map selection
+    CTRL -> REPOS : getInstance()
+    activate REPOS
+    REPOS --> CTRL : repositories
+    deactivate REPOS
+
+    CTRL -> REPOS_SINGLETON : getMapRepository()
+    activate REPOS_SINGLETON
+    REPOS_SINGLETON --> CTRL : mapRepository
+    deactivate REPOS_SINGLETON
+
+    CTRL -> MAP_REPO : getAllMaps()
+    activate MAP_REPO
+    MAP_REPO --> CTRL : List<Map>
+    deactivate MAP_REPO
+
+    CTRL --> UI : return List<Map>
+    deactivate CTRL
+
+    UI --> EDT : show list of available maps
+    EDT -> UI : select map (mapId)
+    UI -> CTRL : setSelectedMap(mapId)
+    activate CTRL
+    CTRL -> MAP_REPO : getMapById(mapId)
+    activate MAP_REPO
+    MAP_REPO --> CTRL : actualMap
+    deactivate MAP_REPO
+    CTRL --> UI : map selected
+    deactivate CTRL
+
+    ' Port and resource configuration
+    group Define Ports and Resources
+        loop for each port
+            UI --> EDT : request port type (import/export/transforming)
+            EDT -> UI : select port type
+            UI --> EDT : request associated resources
+            EDT -> UI : select resources (name, type, quantity, etc)
+            alt import
+                UI -> PRIM_RES_REPO : getAllPrimaryResources()
+                activate PRIM_RES_REPO
+                PRIM_RES_REPO --> UI : List<PrimaryResource>
+                deactivate PRIM_RES_REPO
+                UI -> CTRL : addImportResourceToScenario(resource)
+                activate CTRL
+                CTRL -> UI : message: resource added
+                deactivate CTRL
+            else export
+                UI -> PRIM_RES_REPO : getAllPrimaryResources()
+                activate PRIM_RES_REPO
+                PRIM_RES_REPO --> UI : List<PrimaryResource>
+                deactivate PRIM_RES_REPO
+                UI -> CTRL : addExportResourceToScenario(resource)
+                activate CTRL
+                CTRL -> UI : message: resource added
+                deactivate CTRL
+            else transforming
+                UI -> TRANSF_RES_REPO : getAllTransformingResources()
+                activate TRANSF_RES_REPO
+                TRANSF_RES_REPO --> UI : List<TransformingResource>
+                deactivate TRANSF_RES_REPO
+                UI -> CTRL : addTransformingResourceToScenario(resource)
+                activate CTRL
+                CTRL -> UI : message: resource added
+                deactivate CTRL
+            end
+            UI -> CTRL : addRecourseToScenario(resource)
+            activate CTRL
+            CTRL -> SCENARIO : add resource to scenario
+            activate SCENARIO
+            SCENARIO --> CTRL : resource added
+            deactivate SCENARIO
+            CTRL --> UI : resource added
+            deactivate CTRL
+        end
+    end
+
+    ' Definition of available locomotion types
+    group Define Locomotion Types
+        UI --> EDT : request available locomotion types (STEAM, DIESEL, ELECTRICITY)
+        EDT -> UI : select locomotion types
+        UI -> CTRL : setAvailableLocomotionTypes(selectedTypes)
+        activate CTRL
+        CTRL -> SCENARIO : add available locomotion types
+        activate SCENARIO
+        SCENARIO --> CTRL : locomotion types added
+        deactivate SCENARIO
+        CTRL --> UI : locomotion types defined
+        deactivate CTRL
+    end
+
+    ' Definition of industry generation factors
+    group Define Industry Generation Factors
+        UI --> EDT : request generation factors (frequency, quantity, etc)
+        EDT -> UI : input factors for each industry
+        loop for each industry
+            UI -> IND_REPO : getAllIndustries()
+            activate IND_REPO
+            IND_REPO --> UI : List<Industry>
+            deactivate IND_REPO
+            UI -> CTRL : setIndustryGenerationFactor(industryId, factor)
+            activate CTRL
+            CTRL -> SCENARIO : update industry generation factor
+            activate SCENARIO
+            SCENARIO --> CTRL : factor set
+            deactivate SCENARIO
+            CTRL --> UI : factor set
+            deactivate CTRL
+        end
+    end
+
+    ' Definition of dates and initial money
+    UI --> EDT : request start/end dates and initial money
+    EDT -> UI : input dates and money
+    UI -> CTRL : setScenarioDatesAndMoney(startDate, endDate, money)
+    activate CTRL
+    CTRL -> SCENARIO : set dates and initial money
+    activate SCENARIO
+    SCENARIO --> CTRL : dates and money set
+    deactivate SCENARIO
+    CTRL --> UI : data set
+    deactivate CTRL
+
+    ' Scenario creation
+    UI -> CTRL : createScenario()
+    activate CTRL
+    CTRL -> SCENARIO_REPO : addScenario(scenario)
+    activate SCENARIO_REPO
+    SCENARIO_REPO -> SCENARIO : save scenario
+    activate SCENARIO
+    SCENARIO --> SCENARIO_REPO : confirmation
+    deactivate SCENARIO
+    SCENARIO_REPO --> CTRL : confirmation
+    deactivate SCENARIO_REPO
+    CTRL --> UI : scenario successfully created
+    deactivate CTRL
+
+    UI --> EDT : show success/error message
+
+deactivate UI
+deactivate EDT
+@enduml

@@ -1,0 +1,24 @@
+@startuml
+participant ":AddUpgradeStationUI" as UI
+participant ":AddUpgradeStationController" as CTRL
+participant "simulation\n:Simulation" as SIM
+participant "station\n:Station" as ST
+
+autonumber
+activate UI
+UI -> CTRL : getAvailableBuildingTypes()
+activate CTRL
+CTRL -> SIM : getCurrentTime()
+activate SIM
+SIM --> CTRL : currentTime
+deactivate SIM
+
+CTRL -> ST : getBuildings()
+activate ST
+ST --> CTRL : list of existing buildings
+deactivate ST
+
+CTRL --> UI : list of available building types
+deactivate CTRL
+deactivate UI
+@enduml

@@ -1,0 +1,162 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Editor" as EDT
+participant ":AddIndustryUI" as UI
+participant ":AddIndustryController" as CTRL
+participant "Repositories" as REPOS
+participant "repositories\n:Repositories" as REPOS_SINGLETON
+participant "mapRepository\n:MapRepository" as MAP_REPO
+participant "industryRepository\n:IndustryRepository" as IND_REPO
+participant "actualMap\n:Map" as MAP
+participant "position\n:Position" as POS
+participant "mapElement\n:MapElement" as MAP_ELEM
+participant "industry\n:Industry" as IND
+
+activate EDT
+    EDT -> UI : start AddIndustryUI(mapId)
+    activate UI
+    UI -> CTRL** : new AddIndustryController(mapId)
+    activate CTRL
+
+    CTRL -> REPOS : getInstance()
+    activate REPOS
+    REPOS --> CTRL : repositories
+    deactivate REPOS
+
+    CTRL -> REPOS_SINGLETON : getMapRepository()
+    activate REPOS_SINGLETON
+    REPOS_SINGLETON --> CTRL : mapRepository
+    deactivate REPOS_SINGLETON
+
+    CTRL -> MAP_REPO : getMapById(mapId)
+    activate MAP_REPO
+    MAP_REPO -> MAP** : find map by id
+    MAP_REPO --> CTRL : return actualMap
+    deactivate MAP_REPO
+
+    CTRL -> REPOS_SINGLETON : getIndustryRepository()
+    activate REPOS_SINGLETON
+    REPOS_SINGLETON --> CTRL : industryRepository
+    deactivate REPOS_SINGLETON
+
+    CTRL --> UI : return actualMap
+    deactivate CTRL
+
+    group Industry Type Selection
+        UI --> EDT : ask for industry type
+        EDT -> UI : select industryTypeDesc
+        UI -> CTRL : getAllIndustryTypes()
+        activate CTRL
+        CTRL --> UI : list of industry types
+        deactivate CTRL
+    end
+
+    group Industry Name Input
+        loop until valid name
+            UI --> EDT : ask for industry name
+            EDT -> UI : enter industryName
+            UI -> CTRL : checkIndustryNameExists(industryName)
+            activate CTRL
+                CTRL -> IND_REPO : industryNameExists(industryName)
+                activate IND_REPO
+                IND_REPO --> CTRL : true / false
+                deactivate IND_REPO
+            CTRL --> UI : nameExists
+            deactivate CTRL
+            alt name exists
+                UI --> EDT : error message: industry name exists
+            else
+                UI -> CTRL : setIndustryName(industryName)
+            end
+        end
+    end
+
+    group Industry Position Input
+        loop until valid position
+            UI --> EDT : ask for X position
+            EDT -> UI : enter X
+            UI --> EDT : ask for Y position
+            EDT -> UI : enter Y
+            UI -> CTRL : getWidthMap()
+            activate CTRL
+                CTRL -> MAP : getSize()
+                activate MAP
+                    MAP -> MAP : getWidth()
+                    MAP --> CTRL : mapWidth
+                deactivate MAP
+                CTRL --> UI : mapWidth
+            deactivate CTRL
+            UI -> CTRL : getHeightMap()
+            activate CTRL
+                CTRL -> MAP : getSize()
+                activate MAP
+                    MAP -> MAP : getHeight()
+                    MAP --> CTRL : mapHeight
+                deactivate MAP
+                CTRL --> UI : mapHeight
+            deactivate CTRL
+            alt X or Y out of bounds
+                UI --> EDT : error message: invalid position
+            else
+                UI -> POS** : new Position(X-1, Y-1)
+                UI -> CTRL : getOccupiedPositions()
+                activate CTRL
+                    CTRL -> MAP : getOccupiedPositions()
+                    activate MAP
+                        MAP -> MAP : listAllOccupiedPositions()
+                        MAP -> MAP : clear occupiedPositions
+                        loop for each mapElement in mapElements
+                            MAP -> MAP_ELEM** : getOccupiedPositions()
+                            activate MAP_ELEM
+                                MAP_ELEM --> MAP : occupiedPositions by element
+                            deactivate MAP_ELEM
+                            MAP -> MAP : add occupied positions
+                        end
+                        MAP --> CTRL : occupiedPositions list
+                    deactivate MAP
+                    CTRL --> UI : occupiedPositions
+                deactivate CTRL
+                alt position occupied
+                    UI --> EDT : error message: position occupied
+                else
+                    UI -> CTRL : setPosition(position)
+                end
+            end
+        end
+    end
+
+    group Add Industry to Map
+        UI -> CTRL : addIndustry(industryTypeDesc, industryName, X, Y)
+        activate CTRL
+            CTRL -> CTRL : create Industry object (Primary/Mixed/Transforming)
+            CTRL -> MAP : addElement(industry)
+            activate MAP
+                alt success
+                    MAP --> IND_REPO : addIndustry(industry)
+                    activate IND_REPO
+                        IND_REPO -> IND_REPO : add industry to list
+                        IND_REPO --> MAP : confirmation
+                    deactivate IND_REPO
+                    MAP -> MAP : update occupied positions
+                    MAP --> CTRL : success
+                else failure
+                    MAP --> CTRL : failure
+                end
+            deactivate MAP
+            CTRL --> UI : return success/failure
+        deactivate CTRL
+
+        alt success
+            UI --> EDT : show message: Industry added successfully
+        else
+            UI --> EDT : show message: Failed to add industry
+        end
+    end
+
+deactivate UI
+deactivate EDT
+@enduml

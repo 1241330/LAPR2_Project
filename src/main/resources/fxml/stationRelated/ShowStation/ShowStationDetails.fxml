@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="550.0" prefWidth="700.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pt.ipp.isep.dei.ui.gui.simulation.StationRelated.ShowStation.ShowStationDetailsGUI">
+   <stylesheets>
+      <URL value="@../../textFields.css" />
+      <URL value="@../../buttons.css" />
+        <URL value="@../../table.css" />
+   </stylesheets>
+   <children>
+      <Button fx:id="backButton" layoutX="585.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleBackButtonOnAction" rotate="180.0" style="-fx-background-color: transparent;" text="➱">
+         <font>
+            <Font size="43.0" />
+         </font>
+      </Button>
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="418.0" layoutY="48.0" text="SHOW" textFill="#8c7853">
+         <font>
+            <Font name="Algerian" size="63.0" />
+         </font>
+      </Label>
+      <Label layoutX="374.0" layoutY="96.0" text="STATION" textFill="#8c7853">
+         <font>
+            <Font name="Algerian" size="63.0" />
+         </font>
+      </Label>
+      <Label layoutX="392.0" layoutY="156.0" text="LIST OF STATIONS - DETAILS" textFill="#8c7853">
+         <font>
+            <Font name="Algerian" size="16.0" />
+         </font>
+      </Label>
+
+      <!-- Detalhes da estação -->
+      <GridPane hgap="10" layoutX="363.0" layoutY="198.0" vgap="6">
+         <columnConstraints>
+            <ColumnConstraints minWidth="80" />
+            <ColumnConstraints minWidth="200" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints maxHeight="25.333333333333332" minHeight="25.333333333333332" prefHeight="25.333333333333332" />
+            <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" />
+            <RowConstraints maxHeight="26.0" minHeight="25.6" prefHeight="26.0" />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+         </rowConstraints>
+         <children>
+            <Label text="Name:" GridPane.columnIndex="0" GridPane.rowIndex="0">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font></Label>
+            <Label fx:id="stationNameLabel" prefHeight="18.0" prefWidth="198.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+            <Label text="Type:" GridPane.rowIndex="2">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font></Label>
+            <Label fx:id="stationTypeLabel" prefHeight="18.0" prefWidth="193.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+            <Label text="Position:" GridPane.rowIndex="3">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font></Label>
+            <Label fx:id="stationPositionLabel" prefHeight="18.0" prefWidth="188.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+            <Label text="Direction:" GridPane.rowIndex="4">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font></Label>
+            <Label fx:id="stationDirectionLabel" prefHeight="18.0" prefWidth="195.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+            <Label text="Buildings:" GridPane.rowIndex="5">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font></Label>
+
+            <Label text="Cargoes:" GridPane.rowIndex="6">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font></Label>
+            <ListView fx:id="stationCargoesListView" prefHeight="50.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
+               <placeholder>
+                  <Label />
+               </placeholder>
+            </ListView>
+            <ListView fx:id="stationBuildingsListView" prefHeight="49.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+         </children>
+      </GridPane>
+      <Button fx:id="cancelButton" layoutX="339.0" layoutY="465.0" mnemonicParsing="false" onAction="#handleCancelButtonOnAction" prefHeight="47.0" prefWidth="314.0" style="-fx-background-color: #b39a6f;" text="Cancel" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="22.0" />
+         </font>
+      </Button>
+      <AnchorPane prefHeight="550.0" prefWidth="281.0" style="-fx-background-color: #8C7853;">
+         <children>
+            <ImageView fx:id="logoImageView" fitHeight="239.0" fitWidth="234.0" layoutX="13.0" layoutY="86.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../images/LogoMabec2.png" />
+               </image>
+            </ImageView>
+            <Label fx:id="contactLabel" layoutX="39.0" layoutY="387.0" prefHeight="22.0" prefWidth="128.0" text="Contact:" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="23.0" />
+               </font>
+            </Label>
+            <Label fx:id="phoneLabel" layoutX="39.0" layoutY="419.0" prefHeight="26.0" prefWidth="196.0" text="📞 +351 911 111 111" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="emailContactLabel" layoutX="39.0" layoutY="440.0" prefHeight="26.0" prefWidth="196.0" text="📧 MABEC@isep.ipp.pt" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+
+   </children>
+</AnchorPane>

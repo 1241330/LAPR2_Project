@@ -1,0 +1,39 @@
+@startuml
+autonumber
+
+actor Editor
+participant "System" as SYS
+
+activate Editor
+
+Editor -> SYS : Run Create Map option
+activate SYS
+SYS --> Editor : Display name options menu
+deactivate SYS
+Editor -> SYS : Select name option
+activate SYS
+alt Enter custom name
+    SYS --> Editor : Prompt for map name (with validation rules)
+    Editor -> SYS : Enter map name
+    SYS -> SYS : Validate name format
+    alt Invalid name
+        SYS --> Editor : Show error message
+        Editor -> SYS : Re-enter name
+    end
+else Use default name
+    SYS -> SYS : Set default name
+end
+
+SYS --> Editor : Prompt for dimensions
+deactivate SYS
+Editor -> SYS : Enter width and height
+activate SYS
+SYS -> SYS : Validate dimensions
+alt Invalid dimensions
+    SYS --> Editor : Show error message
+    Editor -> SYS : Re-enter dimensions
+end
+SYS -> SYS : create Map(name, width, height) or createMapDefault(width, height)
+SYS --> Editor : Display success message
+deactivate Editor
+@enduml

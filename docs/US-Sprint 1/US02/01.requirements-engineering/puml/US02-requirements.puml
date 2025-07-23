@@ -1,0 +1,58 @@
+@startuml
+
+actor Editor
+participant ":System" as System
+title: System Sequence Diagram (SSD) - US02
+
+activate Editor
+
+Editor -> System : 1. Add an industry to the map
+activate System
+
+System -> System : 2.1 Check if a map is currently selected
+alt No map selected
+    System --> Editor : 2.2 Show error message
+    deactivate System
+    Editor -> System : 2.3 Select a map
+    activate System
+end
+
+System -> System : 3.1 Show list of available industries (AC1: The industry must be selected from the available industries)
+System --> Editor : Display list of available industries
+deactivate System
+
+Editor -> System : 3.2 Select an industry
+activate System
+
+Editor -> System : 4. Insert position (X, Y)
+
+loop Until valid position is provided
+
+    alt Position out of map bounds
+        System -> System : 5.1 Check if position (X, Y) is within map bounds
+        System --> Editor : 5.1.1 Show error message (out of bounds)
+        deactivate System
+        Editor -> System : 5.1.2 Re-enter position
+        activate System
+    else Position within bounds
+        System -> System : 5.1 Position is valid
+    end
+
+    alt Position already occupied (AC2: Industries cannot overlap with each other)
+        System -> System : 5.2 Check if position is not already occupied by another industry
+        System --> Editor : 5.2.1 Show error message (position occupied)
+        deactivate System
+        Editor -> System : 5.2.2 Re-enter position
+        activate System
+    else Position available
+        System -> System : 5.2 Position is available
+    end
+end
+
+System -> System : 6. Add industry to the selected position
+System --> Editor : 7. Display operation success
+deactivate System
+
+deactivate Editor
+
+@enduml

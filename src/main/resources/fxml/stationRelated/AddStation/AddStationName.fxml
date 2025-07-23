@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="700.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pt.ipp.isep.dei.ui.gui.simulation.StationRelated.AddStation.AddStationNameGUI">
+   <stylesheets>
+      <URL value="@../../textFields.css" />
+        <URL value="@../../buttons.css" />
+   </stylesheets>
+   <children>
+      <AnchorPane prefHeight="550.0" prefWidth="281.0" style="-fx-background-color: #8C7853;">
+         <children>
+            <ImageView fx:id="logoImageView" fitHeight="239.0" fitWidth="234.0" layoutX="13.0" layoutY="86.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../images/LogoMabec2.png" />
+               </image>
+            </ImageView>
+            <Label fx:id="contactLabel" layoutX="39.0" layoutY="387.0" prefHeight="22.0" prefWidth="128.0" text="Contact:" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="23.0" />
+               </font>
+            </Label>
+            <Label fx:id="phoneLabel" layoutX="39.0" layoutY="419.0" prefHeight="26.0" prefWidth="196.0" text="📞 +351 911 111 111" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="emailContactLabel" layoutX="39.0" layoutY="440.0" prefHeight="26.0" prefWidth="196.0" text="📧 MABEC@isep.ipp.pt" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <Button fx:id="yesNameButton" layoutX="343.0" layoutY="370.0" mnemonicParsing="false" onAction="#handleAcceptNameButtonOnAction" prefHeight="38.0" prefWidth="296.0" style="-fx-background-color: #b39a6f;" text="Yes" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Button>
+      <Button fx:id="noNameButton" layoutX="343.0" layoutY="414.0" mnemonicParsing="false" onAction="#handleRejectNameButtonOnAction" prefHeight="38.0" prefWidth="296.0" style="-fx-background-color: #b39a6f;" text="No" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Button>
+      <Label fx:id="nameStationLabel" layoutX="340.0" layoutY="281.0">
+         <font>
+            <Font size="15.0" />
+         </font></Label>
+      <Label fx:id="keepNameLabel" layoutX="343.0" layoutY="335.0" text="Do you want to keep this name?" textFill="#b39a6f">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="428.0" layoutY="55.0" text="Add" textFill="#8c7853">
+         <font>
+            <Font name="Algerian" size="63.0" />
+         </font>
+      </Label>
+      <Label layoutX="450.0" layoutY="163.0" text="Name:" textFill="#8c7853">
+         <font>
+            <Font name="Algerian" size="32.0" />
+         </font>
+      </Label>
+      <Label layoutX="364.0" layoutY="103.0" text="Station" textFill="#8c7853">
+         <font>
+            <Font name="Algerian" size="63.0" />
+         </font>
+      </Label>
+      <Label fx:id="suggestedNameLabel" layoutX="339.0" layoutY="247.0" text="Suggested station name:" textFill="#b39a6f">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label fx:id="enterDesiredNameLabel" layoutX="338.0" layoutY="247.0" text="Enter your desired name:" textFill="#b39a6f" visible="false">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <TextField fx:id="desiredNameTextField" layoutX="338.0" layoutY="279.0" visible="false" />
+      <Button fx:id="continueButton" layoutX="342.0" layoutY="370.0" mnemonicParsing="false" onAction="#handleContinueButtonOnAction" prefHeight="38.0" prefWidth="296.0" style="-fx-background-color: #b39a6f;" text="Continue" textFill="WHITE" visible="false">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Button>
+      <Button fx:id="CancelButton" layoutX="343.0" layoutY="470.0" mnemonicParsing="false" onAction="#handleCancelButtonOnAction" prefHeight="38.0" prefWidth="296.0" style="-fx-background-color: #b39a6f;" text="Cancel" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Button>
+      <Button fx:id="backButton" layoutX="589.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleBackButtonOnAction" rotate="180.0" style="-fx-background-color: transparent;" text="➱">
+         <font>
+            <Font size="43.0" />
+         </font>
+      </Button>
+      <Label fx:id="errorLabel" layoutX="336.0" layoutY="310.0" prefHeight="17.0" prefWidth="337.0" textFill="RED">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

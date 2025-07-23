@@ -1,0 +1,68 @@
+@startuml
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+autonumber
+
+actor "Player" as PLAYER
+participant ":ShowStationUI" as UI
+participant ":ShowStationsController" as CTRL
+participant "Repositories" as REPOS
+participant "mapRepository\n:MapRepository" as MAP_REPO
+participant "map\n:Map" as MAP
+participant "stationRepository\n:StationRepository" as ST_REPO
+participant "station\n:Station" as STATION
+participant "building\n:Building" as BUILDING
+participant "inventory\n:Inventory" as INVENTORY
+participant "resource\n:Resource" as RESOURCE
+
+activate PLAYER
+    PLAYER -> UI : run()
+    activate UI
+        UI -> CTRL : listStations()
+        activate CTRL
+            CTRL -> REPOS : getInstance()
+            activate REPOS
+                REPOS -> REPOS : getMapRepository()
+                REPOS --> CTRL : MapRepository
+            deactivate REPOS
+            CTRL -> MAP_REPO : getMapById(mapId)
+            activate MAP_REPO
+                MAP_REPO --> CTRL : Map
+            deactivate MAP_REPO
+            CTRL -> MAP : getStationList()
+            activate MAP
+                MAP -> ST_REPO : getStations()
+                activate ST_REPO
+                    ST_REPO --> MAP : List<Station>
+                deactivate ST_REPO
+                MAP --> CTRL : List<Station>
+            deactivate MAP
+            CTRL --> UI : List<Station>
+        deactivate CTRL
+
+        UI -> PLAYER : shows station list and requests selection
+        PLAYER -> UI : selects station
+        UI -> STATION : getName(), getPosition(), getStationType(), getDirection()
+         activate STATION
+            UI -> STATION : getBuildings()
+            STATION -> BUILDING : getName()
+            activate BUILDING
+                BUILDING --> STATION : building name
+            deactivate BUILDING
+        deactivate STATION
+        UI -> STATION : getInventory()
+        activate STATION
+            STATION -> INVENTORY : getAllResources()
+            activate INVENTORY
+                INVENTORY -> RESOURCE : getResourceType(), getQuantity()
+                activate RESOURCE
+                    RESOURCE --> INVENTORY : type/quantity
+                deactivate RESOURCE
+            deactivate INVENTORY
+        deactivate STATION
+        UI -> PLAYER : shows selected station details
+    deactivate UI
+deactivate PLAYER
+@enduml

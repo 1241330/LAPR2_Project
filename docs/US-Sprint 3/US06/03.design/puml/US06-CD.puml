@@ -1,0 +1,136 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+skinparam classAttributeIconSize 0
+
+' --- Classes do US06 ---
+class Station {
+    - List<Building> buildings
+    ...
+    + addBuilding(building: Building): void
+    + removeBuilding(building: Building): void
+    + getBuildings(): List<Building>
+    ...()
+}
+
+class Building {
+    - BuildingType type
+
+    + Building(type: BuildingType)
+    + getType(): BuildingType
+    + getName(): String
+    + getConstructionCost(): int
+    ...()
+
+}
+
+enum BuildingType {
+    TELEGRAPH
+    TELEPHONE
+    SMALL_COFFEE
+    LARGE_COFFEE
+    CUSTOMS
+    POSTOFFICE
+    SMALL_HOTEL
+    LARGE_HOTEL
+    SILO
+    LIQUIDSTORAGE
+}
+
+class AddUpgradeStationUI {
+  - AddUpgradeStationController controller
+  + AddUpgradeStationUI(station: Station, simulation: Simulation)
+  + run(): void
+}
+
+class AddUpgradeStationController {
+  - Station station
+  - Simulation simulation
+  + AddUpgradeStationController(station: Station, simulation: Simulation)
+  + getAllBuildingTypes(): BuildingType[]
+  + addBuildingToStation(buildingType: BuildingType): String
+  + getStation(): Station
+  + getSimulation(): Simulation
+}
+
+class Simulation {
+    - int currentTime
+    - int actualMoney
+    ...()
+    + getCurrentTime(): int
+    + getActualMoney(): int
+    + setActualMoney(actualMoney: int): void
+    ...()
+}
+
+class Map {
+    - List<MapElement> mapElementsUsed
+    ...
+    + addElement(element: MapElement): boolean
+    + getOccupiedPositions(): List<Position>
+    ...()
+}
+
+abstract class MapElement {
+    - Position position
+    - List<Position> occupiedPositions
+    ...
+    + getPosition(): Position
+    + setPosition(position: Position): void
+    + getOccupiedPositions(): List<Position>
+    ...()
+}
+
+class Position {
+    - int x
+    - int y
+    + Position(x: int, y: int)
+    + getX(): int
+    + getY(): int
+    ...()
+}
+
+' --- Relations ---
+Station "1" --> "0..*" Building : has
+Building --> BuildingType : type
+AddUpgradeStationUI ..> AddUpgradeStationController
+AddUpgradeStationController ..> Simulation
+AddUpgradeStationController ..> BuildingType : uses
+AddUpgradeStationController ..> Station
+AddUpgradeStationController ..> Building
+
+Station --> MapElement
+Map "1" *--> "*" MapElement : contains
+Map "1" --> "*" Station: contains
+MapElement "1" --> "1" Position : located at
+
+' --- Notes  ---
+
+note right of Building
+    Building represents a specific building associated with a station,
+    defined by its type (BuildingType) and construction cost.
+end note
+
+note right of BuildingType
+    Enumeration of possible building types, with properties such as cost,
+    year of operation and replacement ratio between buildings.
+end note
+
+note left of AddUpgradeStationController
+    Controller responsible for managing the logic of adding or upgrading buildings in
+    a station,  checking conditions such as available money and replacements.
+end note
+
+
+note bottom of Map
+    Represents the game map, containing all the elements positioned,
+    including stations and other MapElement.
+end note
+
+note left of MapElement
+    Abstract class for any element that can be placed on the map,
+    such as stations, cities or industries.
+end note
+
+@enduml

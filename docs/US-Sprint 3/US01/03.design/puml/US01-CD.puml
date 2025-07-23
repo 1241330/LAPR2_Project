@@ -1,0 +1,82 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+skinparam classAttributeIconSize 0
+
+title Class Diagram - US01: Create a Map
+
+class CreateMapUI {
+    - controller: CreateMapController
+    - nameMap: String
+    - defaultNameMap: boolean
+    + CreateMapUI(controller: CreateMapController)
+    + run(): void
+    - aNameMap(): String
+    - enterDefaultNameMap(): boolean
+    + showMapCreated(map: Map): void
+    ...()
+}
+
+class CreateMapController {
+    - mapRepository: MapRepository
+    - map: Map
+    + CreateMapController(mapRepository: MapRepository)
+    + createMap(name: String, width: int, height: int, scale: double): boolean
+    + createMapDefault(width: int, height: int, scale: double): boolean
+    + getMapCreated(): Map
+    ...()
+}
+
+class MapRepository {
+    - maps: List<Map>
+    + addMap(map: Map): boolean
+    + getMapByName(name: String): Map
+    + getAllMaps(): List<Map>
+    + existsMapName(name: String): boolean
+    ...()
+}
+
+class Map {
+    - name: String
+    - size: Size
+    - scale: double
+    + Map(name: String, size: Size, scale: double)
+    + getName(): String
+    + getSize(): Size
+    + getScale(): double
+    ...()
+}
+
+class Size {
+    + Size(width: int, height: int)
+    + getWidth(): int
+    + getHeight(): int
+    ...()
+}
+
+class Position {
+    + Position(x: int, y: int)
+    + getX(): int
+    + getY(): int
+    + equalsPosition(position: Position): boolean
+    + toString(): String
+    ...()
+}
+
+class Repositories {
+    - mapRepository: MapRepository
+    + {static} getInstance(): Repositories
+    + getMapRepository(): MapRepository
+    ...()
+}
+
+CreateMapUI --> CreateMapController : uses
+CreateMapController --> MapRepository : uses
+CreateMapController --> Map : creates
+MapRepository --> Map : manages
+Map --> Size : has
+Repositories --> MapRepository : provides
+
+@enduml
+

@@ -1,0 +1,178 @@
+@startuml
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+skinparam linetype orto
+skinparam classAttributeIconSize 0
+
+title Classe Diagram - US02: Add Industry to Map
+
+' --------------------
+' DOMAIN CLASSES
+' --------------------
+class Industry {
+    - id : int
+    - name : String
+    - type : IndustryType
+    - assignedStation : Station
+    - {static} counterCreatedStations : int
+    + Industry(name: String, type: IndustryType, position: Position)
+    + getName(): String
+    + getId(): int
+    + getType(): String
+    + toString(): String
+    + getIndustryType(): IndustryType
+    - calculateOccupiedPositions(position: Position): List<Position>
+}
+
+enum IndustryType {
+    PRIMARY_SECTOR
+    TRANSFORMING
+    MIXED
+    ...()
+}
+
+class PrimaryIndustry {
+    + PrimaryIndustry(String name, IndustryType type, Position position)
+    + PrimaryIndustry(String name, String scenarioName, PrimaryResource primaryResource)
+    + toString(): String
+    ...()
+}
+
+class MixedIndustry {
+    + MixedIndustry(name: String, type: IndustryType, position: Position)
+    + MixedIndustry(name: String, scenarioName: String)
+    + toString(): String
+    ...()
+}
+
+class TransformingIndustry {
+    + TransformingIndustry(name: String, type: IndustryType, position: Position)
+    + TransformingIndustry(name: String, scenarioName: String, transformingResource: TransformingResource)
+    + toString(): String
+    ...()
+}
+
+class Position {
+    + Position(x : int, y : int)
+    + getX() : int
+    + getY() : int
+    + equalsPosition(position : Position) : boolean
+    + toString() : String
+    - x : int
+    - y : int
+}
+
+class Map {
+    - mapElementsUsed : List<MapElement>
+    - occupiedPositions : List<Position>
+    + addElement(element: MapElement): boolean
+    + removeElement(element: MapElement): boolean
+    + getOccupiedPositions(): List<Position>
+    + positionOccupiedList(positions: List<Position>): boolean
+    - listAllOccupiedPositions(): void
+    + getSize(): Pair<Integer, Integer>
+    ...()
+}
+
+abstract class MapElement {
+    - position : Position
+    - occupiedPositions : List<Position>
+    MapElement(position : Position, occupiedPositions : List<Position>)
+    getPosition() : Position
+    setPosition(position : Position) : void
+    getOccupiedPositions() : List<Position>
+    ...()
+}
+
+Industry --|> MapElement
+PrimaryIndustry --|> Industry
+MixedIndustry --|> Industry
+TransformingIndustry --|> Industry
+
+' --------------------
+' CONTROLLERS
+' --------------------
+class AddIndustryController {
+    - mapRepo : MapRepository
+    - selectedMap : Map
+    - type : IndustryType
+    + AddIndustryController(mapId: int)
+    + getAllIndustryTypes(): List<String>
+    + addIndustry(industryTypeDesc: String, industryName: String, x: int, y: int): void
+    + getWidthMap(): int
+    + getHeightMap(): int
+}
+
+' --------------------
+' UI
+
+class AddIndustryUI {
+    - controller : AddIndustryController
+    - mapId : int
+    + AddIndustryUI(mapId: int)
+    + run(): void
+    - getIndustryName(): String
+    - getIndustryType(): String
+    - getPositionX(): int
+    - getPositionY(): int
+}
+
+' --------------------
+' REPOSITORIES
+' --------------------
+class IndustryRepository {
+    - industries : List<Industry>
+    + IndustryRepository()
+    + addIndustry(industry: Industry): boolean
+    + removeIndustry(industry: Industry): boolean
+    + getIndustryById(id: int): Industry
+    + getIndustryCount(): int
+    + getAllIndustries(): List<Industry>
+    + industryExists(industry: Industry): boolean
+    + industryNameExists(name: String): boolean
+}
+
+class Repositories {
+    - Repositories()
+    + setIndustryName(industryName: String): void
+    + setPosition(position: Position): void
+    + {static} getInstance()
+    + getIndustryRepository(): IndustryRepository
+    + getMapRepository(): MapRepository
+    ...()
+}
+
+class MapRepository {
+    + getMapById(id : int) : Map
+    + addMap(map: Map): boolean
+    + getAllMaps(): List<Map>
+    ...()
+}
+
+' --------------------
+' RELATIONSHIPS
+' --------------------
+AddIndustryUI "1" .> "1" AddIndustryController
+
+AddIndustryController "1" .> "1" Map : manages
+AddIndustryController "1" ..> "*" Industry : creates
+AddIndustryController "1" ..> "*" PrimaryIndustry : creates
+AddIndustryController "1" ..> "*" TransformingIndustry : creates
+AddIndustryController "1" ..> "*" MixedIndustry : creates
+AddIndustryController "1" ..> "1" IndustryRepository : persists
+AddIndustryController "1" ..> "1" IndustryType : retrieves
+AddIndustryController "1" ..> "1" MapRepository : retrieves
+
+Industry "1" --> "1" IndustryType : has
+
+Map "1" *--> "*" MapElement : contains
+MapElement "1" --> "1" Position : located at
+
+Repositories -> "1" Repositories : instance
+Repositories "1" --> "1" IndustryRepository : provides
+Repositories "1" --> "1" MapRepository : provides
+MapRepository "1" --> "1" Map : manages
+
+@enduml

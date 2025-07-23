@@ -1,0 +1,30 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+autonumber
+
+participant ":AddCityController" as CTRL
+participant "Repositories" as REPOS
+participant "repositories\n:Repositories" as REPOS_SINGLETON
+participant "mapRepository\n:MapRepository" as MAP_REPO
+participant "actualMap\n:Map" as MAP
+
+-> CTRL : new AddCityController(mapId)
+activate CTRL
+    CTRL -> REPOS : getInstance()
+    activate REPOS
+        REPOS --> CTRL : repositories
+    deactivate REPOS
+    CTRL -> REPOS_SINGLETON : getMapRepository()
+    activate REPOS_SINGLETON
+        REPOS_SINGLETON --> CTRL : mapRepository
+    deactivate REPOS_SINGLETON
+    CTRL -> MAP_REPO : getMapById(mapId)
+    activate MAP_REPO
+        MAP_REPO -> MAP : find map by id
+        MAP_REPO --> CTRL : return actualMap
+    deactivate MAP_REPO
+<-- CTRL : return actualMap
+deactivate CTRL
+@enduml
+

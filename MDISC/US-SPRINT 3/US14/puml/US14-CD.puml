@@ -1,0 +1,102 @@
+@startuml
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+
+skinparam classAttributeIconSize 0
+
+class MaintenanceRailwayLineUI {
+    - controller: MaintenanceRailwayLineController
+    + MaintenanceRailwayLineUI(stationList: List<Station>, railwayLineList:  List<RailwayLine>, scenarioName:  String)
+    + run(): void
+    - chooseRailwayLineType(): boolean
+    - chooseInitialStation(): boolean
+    - chooseTheNextStations(): void
+    - printFinalMaintenancePath(): void
+}
+
+class MaintenanceRailwayLineController {
+    - stationList: List<Station>
+    - validStations: List<Station>
+    - oddDegreeStations: List<String>
+    - allLines: List<RailwayLine>
+    - availableLines: List<RailwayLine>
+    - selectedStartingStations: List<Station>
+    - vertexDegrees: List<Integer>
+    - scenarioName: String
+    - firstStationAlgorithm: Station
+    - railwayLinesType: String
+    - semiEulerian: boolean
+    - eulerian: boolean
+    - finalMaintenancePath: List<Station>
+    + MaintenanceRailwayLineController(stationList: List<Station>, lines: List<RailwayLine>, scenarioName: String)
+    + getStationList(): List<Station>
+    + setStationList(stationList: List<Station>): void
+    + getAllLines(): List<RailwayLine>
+    + setSelectedStartingStations(selectedStartingStations: List<Station>): void
+    + getScenarioName(): String
+    + setScenarioName(scenarioName: String): void
+    + setRailwayLinesType(railwayLinesType: String): void
+    + setValidStations(validStations: List<Station>): void
+    + getFinalMaintenancePath(): List<Station>
+    + getSizeStationList(): int
+    + getSizeStartingStationsList(): int
+    + getSizeValidStationsList(): int
+    + getStationsNamesList(): List<String>
+    + addStationToStartingStations(station: Station): void
+    + getLastStartingStation(): Station
+    + convertStationsToNames(stations: List<Station>): List<String>
+    + removeStationsInList(stations: List<Station>, stationsRemoves: List<Station>): List<Station>
+    + getStationByName(name: String): Station
+    + buildAdjacencyMatrix(): int[][]
+    + getRailwayLineBetweenStations(station1: String, station2: String): RailwayLine
+    + removeLineFromAvailableLines(line: RailwayLine): void
+    + filterRailwayLinesType(): void
+    + setEulerianPathType(): boolean
+    + typeOfEulerianGraph(): String
+    + setFinalPath(): boolean
+    + findEulerianMaintenancePath(): List<Station>
+    + findStationsWithOddDegree(): void
+    + calculateVertexDegrees(): void
+    + isNotGraphConnected(): boolean
+    + findEulerianPath(start: Station, allLines: List<RailwayLine>): List<Station>
+    + findUnvisitedLine(station: Station, lines: List<RailwayLine>): RailwayLine
+    + getOppositeStation(station: Station, line: RailwayLine): Station
+    + setValidStationsConnectedLines(): void
+    + getStationsConnectedAnotherStation(station: Station): List<Station>
+    + visualisationOfRailwayNetwork(): void
+    + findSameTypeStations(type: char, stationList: List<Station>): List<Station>
+}
+
+class Utils_MDISC {
+    + buildAdjacencyMatrix(stationList: List<Station>, availableLines: List<RailwayLine>): int[][]
+    + adjacencyMatrix:  int[][]
+    ...()
+}
+
+class Station {
+    + getName(): String
+    - name: String
+    ...()
+}
+
+class RailwayLine {
+    + getNameStation1(): String
+    + getNameStation2(): String
+    - station2: Station
+    - station1: Station
+    + getTypeEnum(): RailwayLineType
+    - type: RailwayLineType
+    ...()
+}
+
+
+
+MaintenanceRailwayLineUI .> MaintenanceRailwayLineController
+MaintenanceRailwayLineController .> Utils_MDISC
+MaintenanceRailwayLineController -.> Station
+MaintenanceRailwayLineController .> RailwayLine
+RailwayLine .> Station
+
+@enduml

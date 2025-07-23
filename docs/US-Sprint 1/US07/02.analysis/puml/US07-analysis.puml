@@ -1,0 +1,88 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+hide circle
+hide methods
+
+title Relevant Domain Model Excerpt - US07
+
+class Player {
+    username: Text
+    password: Text
+}
+
+class Simulator {
+    status: Boolean
+    timeOfSimulation: Integer
+}
+
+class Map {
+    name: Text
+}
+
+class Station {
+    name: Text
+    constructionCosts: Decimal
+    stationType: Type
+}
+
+class Position {
+   Xposition: Integer
+   Yposition: Integer
+}
+
+class Building {
+  name: Text
+  cost: Decimal
+  requiredLevel: Integer
+  buildingType: Type
+}
+
+class Size {
+   width: Integer
+   height: Integer
+}
+
+class Cargo {
+    cargoType: Text
+}
+
+interface StationType {
+    Depots
+    Stations
+    Terminals
+}
+
+interface BuildingType {
+    Telegraph
+    Coffee
+    Customs
+    PostOffice
+    Hotel
+    Silo
+    LiquidStorage
+}
+
+Player "1" -- "1" Simulator : start/pause >
+Player "1" -- "*" Map : has >
+Player "1" -- "*" Building : upgrades >
+Player "1" -- "*" Station : build / manages >
+Simulator "*" -- "1" Map : has >
+Simulator "*" -- "*" Station : has >
+Simulator "*" -- "*" Building : has >
+Simulator "0,1" -- "0,1" Player : create/plays <
+Simulator "*" -- "*" Cargo : generate >
+Map "*" -- "*" Station: has >
+Map "*" -- "1" Size : has >
+Map "*" -- "1..*" Position : has >
+Station "*" -- "*" Cargo : assigned to >
+Station "*" -- "1" StationType : has >
+Station "1" -- "1..*" Building : can be upgraded with >
+Station "0,1" -- "1" Position : has >
+Station "*" -- "1" Size : has >
+Building "*" -- "1" BuildingType : has >
+
+@enduml

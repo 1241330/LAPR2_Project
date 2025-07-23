@@ -1,0 +1,132 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+skinparam linetype orto
+skinparam classAttributeIconSize 0
+
+' --------------------
+' DOMAIN CLASSES
+' --------------------
+
+class Station {
+    - name : String
+    - type : StationType
+    + getName() : String
+    + getStationType() : String
+}
+
+class RailwayLine {
+    - station1 : Station
+    - station2 : Station
+    - type : RailwayLineType
+    + getStations() : List<Station>
+    + getTypeEnum() : RailwayLineType
+    + getNameStation1() : String
+    + getNameStation2() : String
+    ...()
+}
+
+' --------------------
+' UI
+' --------------------
+class ConnectivityBetweenStationsUI {
+    - controller : ConnectivityBetweenStationsController
+    + run() : void
+    - chooseTypeOfTrain() : boolean
+    + checkConnectivityBetweenStations() : void
+    + checkConnectivityBetweenTwoStations() : void
+    - visualizeRailwayNetwork() : void
+}
+
+class ViewAdjacencyMatrixUI {
+    - controller : ConnectivityBetweenStationsController
+    + run() : void
+    - chooseTypeOfTrain() : boolean
+}
+
+class ViewTransitiveMatrixUI {
+    - controller : ConnectivityBetweenStationsController
+    + run() : void
+    - chooseTypeOfTrain() : boolean
+}
+
+class MenuItem {
+    - description : String
+    - ui : Runnable
+    + MenuItem(description : String, ui : Runnable)
+    + run() : void
+    + hasDescription(description : String) : boolean
+    + toString() : String
+}
+
+' --------------------
+' CONTROLLER
+' --------------------
+class ConnectivityBetweenStationsController {
+    - stationList : List<Station>
+    - allLines : List<RailwayLine>
+    - availableLines : List<RailwayLine>
+    - scenarioName : String
+    - selectedTrainType : String
+    + filterRailwayLinesType() : void
+    + removeLineFromAvailableLines(line : RailwayLine) : void
+    + buildAdjacencyMatrix() : int[][]
+    + getTransitiveClosureMatrix() : int[][]
+    + isConnectedTransitive(origin : Station, destination : Station) : boolean
+    + verifyConnectivity(impossibleStationType : char[]) : boolean
+    + findSameTypeStations(type : char) : List<Station>
+}
+
+' --------------------
+' Utils
+' --------------------
+class Utils_MDISC {
+    + buildAdjacencyMatrix(stationList : List<Station>, availableLines : List<RailwayLine>) : int[][]
+    + getStationPositionsInList(stationList : List<Station>, line : RailwayLine) : int[]
+}
+
+' --------------------
+' RELATIONSHIPS
+' --------------------
+RailwayLine "0..*" --> "1" Station
+ConnectivityBetweenStationsController "1" .> "0..*" Station : manages
+ConnectivityBetweenStationsController "1" ..> "0..*" RailwayLine : filters and uses
+ConnectivityBetweenStationsController "1" ..> "1" ViewAdjacencyMatrixUI : generates
+ConnectivityBetweenStationsController "1" ..> "1" ViewTransitiveMatrixUI : generates
+ConnectivityBetweenStationsController "1" ..> "*" MenuItem : provides
+ConnectivityBetweenStationsUI "1" .> "1" ConnectivityBetweenStationsController : interacts with
+MenuItem "1" ..> "1..*" ConnectivityBetweenStationsUI : links to
+ConnectivityBetweenStationsController ..> Utils_MDISC : uses
+
+' --------------------
+' NOTES
+' --------------------
+note top of ConnectivityBetweenStationsUI
+User interface for analyzing connectivity
+between railway stations.
+end note
+
+note top of ConnectivityBetweenStationsController
+Controller responsible for the connectivity logic
+between railway stations.
+end note
+
+note top of ViewAdjacencyMatrixUI
+User interface for visualizing the adjacency
+matrix of the railway network.
+end note
+
+note top of ViewTransitiveMatrixUI
+User interface for visualizing the transitive
+matrix of the railway network.
+end note
+
+note top of Station
+Represents a railway station.
+end note
+
+note top of RailwayLine
+Represents a railway line connecting two stations.
+end note
+@enduml

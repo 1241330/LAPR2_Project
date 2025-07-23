@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<?import java.net.URL?>
+<AnchorPane style="-fx-background-color: #fdfaf6;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pt.ipp.isep.dei.ui.gui.simulation.RunSimulationGUI">
+    <stylesheets>
+        <URL value="@../checkbox-style.css" />
+    </stylesheets>
+    <children>
+
+        <!-- Top Header -->
+        <HBox layoutY="20.0" spacing="20.0"
+              AnchorPane.leftAnchor="40.0"
+              AnchorPane.topAnchor="20.0"
+              AnchorPane.rightAnchor="40.0"
+              style="-fx-background-color: #ffffff;
+                     -fx-border-color: #8C7853;
+                     -fx-border-width: 1.5px;
+                     -fx-border-radius: 8px;
+                     -fx-background-radius: 8px;
+                     -fx-padding: 15px;">
+            <children>
+                <Label fx:id="budgetLabel" text="💰 Budget: €100,000" textFill="#8C7853">
+                    <font>
+                        <Font name="Segoe UI Semibold" size="22.0"/>
+                    </font>
+                </Label>
+
+                <Label fx:id="dateLabel" text="📅 Date: 01/01/2030" textFill="#8C7853">
+                    <font>
+                        <Font name="Segoe UI Semibold" size="22.0"/>
+                    </font>
+                </Label>
+
+                <Pane HBox.hgrow="ALWAYS"/>
+
+                <!-- Filtros -->
+                <HBox spacing="12" alignment="CENTER_RIGHT"
+                      maxHeight="Infinity" maxWidth="Infinity"
+                      style="-fx-border-color: #8C7853;
+                             -fx-border-width: 1.5px;
+                             -fx-border-radius: 6px;
+                             -fx-background-radius: 6px;
+                             -fx-background-color: #ffffff;
+                             -fx-padding: 5 12 5 12;">
+                    <children>
+                        <Button text="Select All" onAction="#handleSelectAllFilters"
+                                style="-fx-background-color: #4CAF50;
+                                       -fx-text-fill: white;
+                                       -fx-font-weight: bold;
+                                       -fx-background-radius: 6px;
+                                       -fx-cursor: hand;
+                                       -fx-background-insets: 0;">
+                            <font><Font name="Segoe UI Semibold" size="14"/></font>
+                        </Button>
+                        <Button text="Clear All" onAction="#handleClearAllFilters"
+                                style="-fx-background-color: #B22222;
+                                       -fx-text-fill: white;
+                                       -fx-font-weight: bold;
+                                       -fx-background-radius: 6px;
+                                       -fx-cursor: hand;
+                                       -fx-background-insets: 0;">
+                            <font><Font name="Segoe UI Semibold" size="14"/></font>
+                        </Button>
+                        <HBox fx:id="filtersContainer" spacing="10" alignment="CENTER_LEFT"/>
+                    </children>
+                </HBox>
+            </children>
+        </HBox>
+
+        <!-- Conteúdo Principal -->
+        <HBox spacing="30.0" alignment="TOP_LEFT"
+              AnchorPane.topAnchor="100.0"
+              AnchorPane.leftAnchor="40.0"
+              AnchorPane.rightAnchor="40.0"
+              AnchorPane.bottomAnchor="100.0">
+            <children>
+
+                <!-- Logs -->
+                <VBox spacing="10.0" HBox.hgrow="ALWAYS" alignment="TOP_LEFT">
+                    <children>
+                        <Label text="Logs" textFill="#8c7853">
+                            <font><Font name="Algerian" size="40.0"/></font>
+                        </Label>
+                        <ScrollPane fx:id="logsScrollPane" fitToHeight="true" fitToWidth="true"
+                                    VBox.vgrow="ALWAYS"
+                                    style="-fx-background-color: transparent;
+                                           -fx-border-color: #8C7853;
+                                           -fx-border-width: 1.5px;
+                                           -fx-background-radius: 10px;">
+                            <content>
+                                <TextFlow fx:id="simulationLogs"
+                                          style="-fx-background-color: #ffffff;
+                                                 -fx-font-family: 'Consolas';
+                                                 -fx-font-size: 12px;
+                                                 -fx-text-fill: #333333;
+                                                 -fx-background-radius: 10px;
+                                                 -fx-padding: 10px;"/>
+                            </content>
+                        </ScrollPane>
+                    </children>
+                </VBox>
+
+                <!-- Financial Data -->
+                <VBox prefWidth="350.0" spacing="10.0" alignment="TOP_LEFT">
+                    <children>
+                        <Label alignment="CENTER" prefHeight="45.0" prefWidth="353.0"
+                               text="Financial data" textFill="#8c7853">
+                            <font><Font name="Algerian" size="40.0"/></font>
+                        </Label>
+                        <AnchorPane fx:id="pieChartAnchorPane"
+                                    style="-fx-background-color: #ffffff;
+                                           -fx-border-color: #8C7853;
+                                           -fx-border-width: 1.5px;"
+                                    VBox.vgrow="ALWAYS"/>
+                        <AnchorPane fx:id="barChartAnchorPane"
+                                    style="-fx-background-color: #ffffff;
+                                           -fx-border-color: #8C7853;
+                                           -fx-border-width: 1.5px;"
+                                    VBox.vgrow="ALWAYS"/>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+
+        <!-- Controles inferiores -->
+        <HBox alignment="CENTER_RIGHT" spacing="15.0"
+              AnchorPane.bottomAnchor="25.0"
+              AnchorPane.rightAnchor="40.0">
+            <children>
+                <Button fx:id="decreaseSpeedButton" onAction="#handleDecreaseSpeedButton"
+                        prefHeight="55.0" prefWidth="55.0"
+                        style="-fx-background-color: #8C7853;
+                               -fx-background-radius: 10px;
+                               -fx-text-fill: white;
+                               -fx-font-size: 20px;"
+                        text="−"/>
+                <Label fx:id="simulationSpeedLabel" alignment="CENTER" prefWidth="120"
+                       style="-fx-font-size: 18px; -fx-font-weight: bold;"
+                       text="Speed: 1.0x" textFill="#8C7853"/>
+                <Button fx:id="increaseSpeedButton" onAction="#handleIncreaseSpeedButton"
+                        prefHeight="55.0" prefWidth="55.0"
+                        style="-fx-background-color: #8C7853;
+                               -fx-background-radius: 10px;
+                               -fx-text-fill: white;
+                               -fx-font-size: 20px;" text="+"/>
+                <Button fx:id="pauseButton" onAction="#handlePauseSimulationButton"
+                        prefHeight="55.0" prefWidth="140.0"
+                        style="-fx-background-color: #8C7853;
+                               -fx-background-radius: 10px;
+                               -fx-text-fill: white;
+                               -fx-font-size: 16px;" text="⏸ Pause"/>
+                <Button fx:id="terminateButton" onAction="#handleTerminateSimulationButton"
+                        prefHeight="55.0" prefWidth="140.0"
+                        style="-fx-background-color: #B22222;
+                               -fx-background-radius: 10px;
+                               -fx-text-fill: white;
+                               -fx-font-size: 16px;" text="🛑 Terminate"/>
+            </children>
+        </HBox>
+
+    </children>
+</AnchorPane>

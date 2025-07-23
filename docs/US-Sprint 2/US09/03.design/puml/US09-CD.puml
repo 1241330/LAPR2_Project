@@ -1,0 +1,178 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+skinparam linetype ortho
+
+skinparam classAttributeIconSize 0
+
+top to bottom direction
+
+' --------------------
+' DOMAIN CLASSES
+' --------------------
+class User {
+}
+
+class Player {
+}
+
+class Locomotive {
+    - name : String
+    - power : double
+    - acceleration : double
+    - topSpeed : double
+    - startYearOperation : int
+    - acquisitionPrice : int
+    - fuelType : FuelType
+    - railroadLineAssociated : int
+    + Locomotive(name: String, power: double, acceleration: double, topSpeed: double, startYearOperation: int, acquisitionPrice: int, fuelType: FuelType)
+    + getName(): String
+    + getPower(): double
+    + getAcceleration(): double
+    + getTopSpeed(): double
+    + getStartYearOperation(): int
+    + getAcquisitionPrice(): int
+    + getFuelType(): FuelType
+    + getRailroadLineAssociated(): int
+    + toString(): String
+    ...()
+}
+
+class Scenario {
+    - map : Map
+    - name : String
+    - initialMoney : int
+    - stationList : List<Station>
+    - availableLocomotiveList : List<Locomotive>
+    - boughtLocomotives : List<Locomotive>
+    + addLocomotive(locomotive: Locomotive): void
+    + getAvailableLocomotiveList(): List<Locomotive>
+    + addBoughtLocomotive(locomotive: Locomotive): void
+    + getBoughtLocomotives(): List<Locomotive>
+    ...()
+}
+
+class TimeDate {
+    - year : int
+    - month : int
+    + TimeDate(year: int, month: int)
+    + getYear(): int
+    + getMonth(): int
+    + getTotalMonths(): int
+    + getDifference(timeDate: TimeDate): int
+    + before(timeDate: TimeDate): boolean
+    + toString(): String
+}
+
+class Simulation {
+    - currentTime : int
+    - maxTime : int
+    - actualMoney : int
+    + Simulation(maxTime: int, actualMoney: int, actualTime: int)
+    + getCurrentTime(): int
+    + getActualMoney(): int
+    + setActualMoney(actualMoney: int): void
+    ...()
+}
+
+enum FuelType {
+    DIESEL
+    ELECTRIC
+    STEAM
+    ...()
+}
+
+' --------------------
+' UI
+' --------------------
+class BuyLocomotiveUI {
+    - simulation : Simulation
+    - controller : BuyTrainPartController
+    + BuyLocomotiveUI(actualScenario: Scenario, simulation: Simulation)
+    + run(): void
+}
+
+' --------------------
+' CONTROLLERS
+' --------------------
+class BuyTrainPartController {
+    - carriageRepository : CarriageRepository
+    - scenario : Scenario
+    - simulation : Simulation
+    + BuyTrainPartController(scenario: Scenario, simulation: Simulation)
+    + getAvailableLocomotivesByDate(currentDate: int): List<Locomotive>
+    + buyLocomotive(locomotive: Locomotive): boolean
+    ...()
+}
+
+' --------------------
+' REPOSITORIES
+' --------------------
+class LocomotiveRepository {
+    - locomotiveList : List<Locomotive>
+    + LocomotiveRepository()
+    + save(locomotive: Locomotive): void
+    + getAllLocomotives(): List<Locomotive>
+    + clear(): void
+    ...()
+}
+
+class Repositories {
+    - instance : Repositories
+    + {static} getInstance(): Repositories
+    + getLocomotiveRepository(): LocomotiveRepository
+    ...()
+}
+
+' --------------------
+' RELATIONSHIPS
+' --------------------
+User "1" ---> "*" Player : interacts
+Player "1" -> "1" Simulation : interacts with
+Player "1" ---> "1" BuyLocomotiveUI : uses
+Player "1" .> "1" BuyTrainPartController : interacts with
+
+BuyLocomotiveUI "1" ...> "1" BuyTrainPartController : interacts with
+BuyLocomotiveUI "1" ..> "1" Simulation : uses
+
+BuyTrainPartController "1" ...> "1" Scenario : manages
+BuyTrainPartController "1" ...> "1" Simulation : uses
+BuyTrainPartController "1" ...> "1" LocomotiveRepository : retrieves
+BuyTrainPartController "1" .> "1" TimeDate : uses
+BuyTrainPartController "1" ..> "1" Repositories : uses
+BuyTrainPartController "1" ..> "1" Locomotive : manages
+BuyTrainPartController "1" --> "1" FuelType : uses
+
+Scenario "1" ---> "*" Locomotive : contains
+
+Simulation "1" ---> "1" TimeDate : has current time
+
+Locomotive "*" ---> "1" FuelType : uses
+
+Repositories "1" --> "1" LocomotiveRepository : provides
+LocomotiveRepository "1" --> "*" Locomotive : contains
+LocomotiveRepository "1" ...> "1" Repositories : uses
+LocomotiveRepository "1" --> "1" FuelType : uses
+
+
+' --------------------
+' NOTES
+' --------------------
+note bottom of Locomotive
+    Represents a train locomotive with attributes such as power, speed, and fuel type.
+end note
+
+note bottom of Scenario
+    Manages the available and bought locomotives for the simulation.
+end note
+
+note bottom of BuyTrainPartController
+    Handles the logic for buying locomotives and retrieving available ones.
+end note
+
+note bottom of BuyLocomotiveUI
+    Provides the user interface for buying locomotives.
+end note
+
+@enduml

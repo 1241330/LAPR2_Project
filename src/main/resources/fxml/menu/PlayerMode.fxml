@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<?import java.net.URL?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="700.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pt.ipp.isep.dei.ui.gui.menu.PlayerMenuGUI">
+   <stylesheets>
+      <URL value="@../buttons.css" />
+   </stylesheets>
+   <children>
+      <AnchorPane prefHeight="550.0" prefWidth="281.0" style="-fx-background-color: #8C7853;">
+         <children>
+            <ImageView fx:id="logoImageView" fitHeight="239.0" fitWidth="234.0" layoutX="13.0" layoutY="86.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../images/LogoMabec2.png" />
+               </image>
+            </ImageView>
+            <Label fx:id="contactLabel" layoutX="39.0" layoutY="387.0" prefHeight="22.0" prefWidth="128.0" text="Contact:" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="25.0" />
+               </font>
+            </Label>
+            <Label fx:id="phoneLabel" layoutX="39.0" layoutY="417.0" prefHeight="26.0" prefWidth="196.0" text="📞 +351 911 111 111" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="emailContactLabel" layoutX="39.0" layoutY="437.0" prefHeight="26.0" prefWidth="196.0" text="📧 MABEC@isep.ipp.pt" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <Label fx:id="loginLockerText" alignment="CENTER" contentDisplay="CENTER" layoutX="438.0" layoutY="24.0" prefHeight="103.0" prefWidth="101.0" text="🎮​" textFill="#b39a6f">
+         <font>
+            <Font size="86.0" />
+         </font>
+      </Label>
+      <Label fx:id="loginFailed" layoutX="260.0" layoutY="286.0" textFill="RED" />
+      <Button layoutX="341.0" layoutY="304.0" mnemonicParsing="false" onAction="#handleSimulationButton" prefHeight="47.0" prefWidth="296.0" style="-fx-background-color: #b39a6f;" text="Simulation" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Button>
+      <Button layoutX="341.0" layoutY="354.0" mnemonicParsing="false" onAction="#handleVerifyRoutesButton" prefHeight="47.0" prefWidth="296.0" style="-fx-background-color: #b39a6f;" text="Verify Routes" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Button>
+      <Button layoutX="341.0" layoutY="427.0" mnemonicParsing="false" onAction="#handleLogoutButton" prefHeight="47.0" prefWidth="296.0" style="-fx-background-color: #b39a6f;" text="Logout" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Button>
+      <Label alignment="CENTER" layoutX="359.0" layoutY="130.0" prefHeight="18.0" prefWidth="259.0" text="Player" textFill="#8c7853">
+         <font>
+            <Font name="Algerian" size="61.0" />
+         </font>
+      </Label>
+      <Label alignment="CENTER" layoutX="359.0" layoutY="184.0" prefHeight="18.0" prefWidth="259.0" text="Mode" textFill="#8c7853">
+         <font>
+            <Font name="Algerian" size="61.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

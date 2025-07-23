@@ -1,0 +1,51 @@
+@startuml retrieve_available_locomotives
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Player" as PLY
+participant ":BuyLocomotiveUI" as UI
+participant ":BuyTrainPartController" as CTRL
+participant "Repositories" as REPOS
+participant "repositories\n:Repositories" as REPOS_INST
+participant "locomotiveRepository\n:LocomotiveRepository" as LOC_REP_INST
+participant ":Scenario" as SCENARIO
+participant ":Simulation" as SIMULATION
+
+activate PLY
+PLY -> UI : requests to buy a locomotive
+activate UI
+UI -> CTRL : BuyTrainPartController(scenario, simulation)
+activate CTRL
+
+group Retrieve Available Locomotives
+    CTRL -> REPOS : getInstance()
+    activate REPOS
+    REPOS --> CTRL : repositories
+    deactivate REPOS
+
+    CTRL -> REPOS_INST : getLocomotiveRepository()
+    activate REPOS_INST
+    REPOS_INST --> CTRL : locomotiveRepository
+    deactivate REPOS_INST
+
+    CTRL -> LOC_REP_INST : getAllLocomotives()
+    activate LOC_REP_INST
+    LOC_REP_INST --> CTRL : allLocomotives
+    deactivate LOC_REP_INST
+
+    CTRL -> SCENARIO : getAvailableLocomotiveList()
+    activate SCENARIO
+    SCENARIO --> CTRL : availableLocomotives
+    deactivate SCENARIO
+
+    CTRL -> SIMULATION : getCurrentTime()
+    activate SIMULATION
+    SIMULATION --> CTRL : currentTime
+    deactivate SIMULATION
+
+    CTRL -> CTRL : filter locomotives by date
+    CTRL --> UI : filteredLocomotives
+end
+@enduml

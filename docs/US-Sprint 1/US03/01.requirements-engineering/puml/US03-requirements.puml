@@ -1,0 +1,83 @@
+@startuml
+
+actor Editor
+participant ":System" as System
+title: System Sequence Diagram (SSD) - US03 - Add a City
+
+activate Editor
+
+Editor -> System : 1. Request to add a city to the map
+activate System
+
+System -> System : 2.1 Check if a map is currently selected
+alt No map selected
+    System --> Editor : 2.2 Show error message
+    deactivate System
+    Editor -> System : 2.3 Select a map
+    activate System
+end
+
+System -> System : 3.1 Ask for city name, position (X,Y), and house block assignment mode
+System --> Editor : Request city details
+deactivate System
+
+Editor -> System : 3.2 Provide city name, position (X,Y), and select assignment mode
+activate System
+
+loop Until valid inputs are provided
+    alt Invalid city name (AC1: A city name cannot have special characters or digits)
+        System -> System : 4.1 Validate city name
+        System --> Editor : 4.1.1 Show error message (invalid city name)
+        deactivate System
+        Editor -> System : 4.1.2 Re-enter city name
+        activate System
+    else Valid city name
+        System -> System : 4.1 City name is valid
+    end
+
+    alt City name already exists (AC3: When a city name already exists in the map, the system must display a warning to the editor)
+        System -> System : 4.1.3 Check if city name already exists
+        System --> Editor : 4.1.4 Show warning (city name exists)
+        deactivate System
+        Editor -> System : 4.1.5 Confirm or change city name
+        activate System
+    else City name is unique
+        System -> System : 4.1.6 City name is unique
+    end
+    deactivate System
+    alt Manual house block assignment (AC2: The house blocks can be assigned manually or automatically)
+
+            Editor -> System : 4.3.1 Provide house block positions
+            activate System
+            System -> System : 4.3.2 Validate manual house block positions
+            alt Invalid manual placement of house block
+                System --> Editor : 4.3.3 Show error message (invalid placement)
+                deactivate System
+                Editor -> System : 4.3.4 Re-enter positions
+                activate System
+            else Valid manual placement
+                System -> System : 4.3.5 House block positions confirmed
+            end
+    else Automatic house block assignment
+        System -> System : 4.4 Automatically assign house blocks based on city position
+    end
+
+
+    alt Position out of bounds or occupied
+        System -> System : 4.2 Validate city position
+        System --> Editor : 4.2.1 Show error message (invalid position)
+        deactivate System
+        Editor -> System : 4.2.2 Re-enter position
+        activate System
+    else Valid position
+        System -> System : 4.2 Position is valid
+    end
+end
+
+System -> System : 5. Add city with house blocks to the selected map
+System --> Editor : 6. Display operation success
+deactivate System
+
+deactivate Editor
+
+@enduml

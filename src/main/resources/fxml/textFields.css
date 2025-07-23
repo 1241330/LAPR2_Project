@@ -1,0 +1,102 @@
+/* INPUTS (TextField e PasswordField) */
+.text-field, .password-field {
+    -fx-border-color: #c9ae7f;
+    -fx-border-radius: 4;
+    -fx-padding: 6 8;
+    -fx-background-color: #f9f9f9;
+}
+.text-field:focused, .password-field:focused {
+    -fx-border-color: #c9ae7f;
+}
+
+
+/* ---------- CHOICEBOX VISUAL ---------- */
+.choice-box {
+    -fx-background-color: #fefaf3;
+    -fx-border-color: #c9ae7f;
+    -fx-border-width: 2;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 6 12;
+    -fx-font-size: 12px;
+    -fx-text-fill: #4a3b1f;
+}
+
+.choice-box .arrow {
+    -fx-background-color: #c9ae7f;
+}
+
+.choice-box:hover {
+    -fx-border-color: #b59764;
+}
+
+.choice-box:focused {
+    -fx-border-color: #b59764;
+    -fx-background-insets: 0;
+}
+
+.choice-box .context-menu {
+    -fx-background-color: #fefaf3;
+    -fx-border-color: #c9ae7f;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 4;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 5, 0.5, 0, 2);
+}
+
+.choice-box .menu-item {
+    -fx-background-color: transparent;
+    -fx-text-fill: #4a3b1f;
+    -fx-padding: 8 14;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.choice-box .menu-item:focused {
+    -fx-background-color: #c9ae7f;
+    -fx-text-fill: white;
+    -fx-background-radius: 6;
+}
+
+
+/* ---------- COMBOBOX MELHORADA ---------- */
+.combo-box {
+    -fx-background-color: transparent;
+    -fx-background-radius: 6;
+    -fx-padding: 2 8;
+    -fx-font-size: 12px;
+    -fx-text-fill: #4a3b1f;
+    -fx-pref-height: 28;
+}
+
+
+.combo-box .arrow-button {
+    -fx-background-color: #c9ae7f;
+    -fx-background-radius: 0 6 6 0;
+    -fx-padding: 0 6;
+}
+.combo-box .arrow {
+    -fx-background-color: white;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: #fefaf3;
+    -fx-border-color: #c9ae7f;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 5, 0.5, 0, 2);
+}
+
+.combo-box .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #4a3b1f;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+    -fx-padding: 6 12;
+}
+
+.combo-box .list-cell:hover,
+.combo-box .list-cell:selected {
+    -fx-background-color: #c9ae7f;
+    -fx-text-fill: white;
+}

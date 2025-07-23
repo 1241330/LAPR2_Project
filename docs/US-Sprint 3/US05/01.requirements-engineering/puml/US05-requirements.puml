@@ -1,0 +1,56 @@
+@startuml
+
+actor Editor
+participant System
+title: System Sequence Diagram (SSD) - Create Station
+
+activate Editor
+Editor -> System: 1. Start CreateStation(idMap, simulation)
+activate System
+
+System --> Editor: 2. Ask for station type
+deactivate System
+Editor -> System: 3. Select station type
+activate System
+
+System --> Editor: 4. Ask for position
+deactivate System
+Editor -> System: 5. Select station position
+activate System
+
+alt Type is STATION
+    System --> Editor: 6. Ask for direction
+    deactivate System
+    Editor -> System: 7. Select direction
+    activate System
+end
+
+System -> System: 8. Generate suggested name
+System --> Editor: 9. Show suggested name
+deactivate System
+
+Editor -> System: 10. Accept or enter custom name
+activate System
+
+System --> Editor: 11. Check simulation balance
+System -> System: 12. (AC01) Verify if balance is enough
+
+alt Insufficient balance
+    System --> Editor: 13. Show error "Insufficient balance"
+
+else Sufficient balance
+    System -> System: 14. Retrieve Map by id
+    System -> System: 15. Add station to map
+
+    System -> System: 16. Save station to repository
+
+    alt Station creation successful
+        System --> Editor: 17. Station created successfully
+    else Station creation failed
+        System --> Editor: 18. Error (position occupied or name exists)
+    end
+
+    deactivate System
+end
+
+@enduml

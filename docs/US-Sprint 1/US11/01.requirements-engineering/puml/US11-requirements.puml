@@ -1,0 +1,37 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title System Sequence Diagram (SSD) - US11 - List Trains
+
+autonumber
+
+actor "Player" as Player
+participant ":System" as System
+
+activate Player
+
+    Player -> System : asks to list all trains
+    activate System
+
+    System -> System : get all trains
+
+    loop for each train
+        System -> System : get the locomotive
+        System -> System : get the current cargoes
+    end loop
+
+    System -> System : group by locomotive type
+    System -> System : sort alphabetically by name
+
+        System --> Player : displays the data and requests confirmation
+    deactivate System
+
+    Player -> System : confirms data
+    activate System
+
+        System --> Player : displays operation success
+    deactivate System
+
+@enduml

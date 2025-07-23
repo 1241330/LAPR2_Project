@@ -1,0 +1,53 @@
+@startuml
+
+hide circle
+hide methods
+
+
+title: Relevant Domain Model Excerpt - US04
+
+class Editor {
+    username: Text
+    password: Text
+}
+
+class Map {
+   name: Text
+}
+
+class Size {
+   width: Integer
+   height: Integer
+}
+
+class Position {
+   Xposition: Integer
+   Yposition: Integer
+}
+
+class Scenario {
+  scenarioType: Text
+  simulationPeriod: Integer
+}
+
+class HistoricalEvent {
+    name: Text
+    startDate: Date
+    endDate: Date
+    temporalRestrictions: Map
+}
+
+'Editor connections
+Editor "1" -- "1..*" Map : creates / edits >
+Editor "1" -- "*" Scenario : creates/edits >
+
+'Map connections
+Map "1" -- "1" Size : has >
+Map "*" - "*" Scenario : has >
+Map "*" -- "1..*" Position : has >
+
+'Scenario connections
+Scenario "*" -- "*" HistoricalEvent : has >
+
+
+@enduml

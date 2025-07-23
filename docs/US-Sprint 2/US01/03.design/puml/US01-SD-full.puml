@@ -1,0 +1,79 @@
+@startuml
+actor Editor
+participant ":CreateMapUI" as CreateMapUI
+participant ":CreateMapController" as CreateMapController
+participant ":Map" as Map
+participant ":MapRepository" as MapRepository
+participant ":Repositories" as Repositories
+
+title: Sequence Diagram - US01 - Create a Map
+
+activate Editor
+
+Editor -> CreateMapUI : 1. Run Create Map option
+activate CreateMapUI
+
+CreateMapUI --> Editor : 2. Display name options menu
+deactivate CreateMapUI
+Editor -> CreateMapUI : 3. Select name option
+activate CreateMapUI
+alt Enter custom name
+    CreateMapUI --> Editor : 4. Prompt for map name (with validation rules)
+    deactivate CreateMapUI
+    Editor -> CreateMapUI : 5. Enter map name
+    activate CreateMapUI
+    CreateMapUI -> CreateMapUI : 6. Validate name format
+    alt Invalid name
+        CreateMapUI --> Editor : 6.1 Show error message
+        deactivate CreateMapUI
+        Editor -> CreateMapUI : 6.2 Re-enter name
+        activate CreateMapUI
+    end
+else Use default name
+    CreateMapUI -> CreateMapUI : 7. Set default name
+end
+
+CreateMapUI --> Editor : 8. Prompt for dimensions
+deactivate CreateMapUI
+Editor -> CreateMapUI : 9. Enter width and height
+activate CreateMapUI
+CreateMapUI -> CreateMapUI : 10. Validate dimensions
+alt Invalid dimensions
+    CreateMapUI --> Editor : 10.1 Show error message
+    deactivate CreateMapUI
+    Editor -> CreateMapUI : 10.2 Re-enter dimensions
+    activate CreateMapUI
+end
+
+CreateMapUI -> CreateMapController : 11. createMap(name, width, height) or createMapDefault(width, height)
+activate CreateMapController
+
+CreateMapController -> CreateMapController : 12. Validate inputs
+CreateMapController -> Repositories : 13. getInstance()
+activate Repositories
+Repositories --> CreateMapController : 14. Repositories instance
+deactivate Repositories
+
+CreateMapController -> Repositories : 15. getMapRepository()
+activate Repositories
+Repositories --> CreateMapController : 16. MapRepository instance
+deactivate Repositories
+
+CreateMapController -> Map : 17. new Map(name, size) or new Map(size)
+activate Map
+Map --> CreateMapController : 18. Map instance
+deactivate Map
+
+CreateMapController -> MapRepository : 19. addMap(map)
+activate MapRepository
+MapRepository --> CreateMapController : 20. Confirmation
+deactivate MapRepository
+
+CreateMapController --> CreateMapUI : 21. Map created
+deactivate CreateMapController
+
+CreateMapUI --> Editor : 22. Display success message
+deactivate CreateMapUI
+
+deactivate Editor
+@enduml

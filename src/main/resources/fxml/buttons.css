@@ -1,0 +1,4 @@
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom, #c7ae83, #a68c65); /* dá efeito suave */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 6, 0.2, 0, 1); /* sombra leve */
+}

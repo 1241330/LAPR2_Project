@@ -1,0 +1,141 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+hide methods
+
+title Relevant Domain Model excerpt for US12 - Create a simulator
+
+' ============= CLASS's =============
+
+class Simulator {
+    status: Boolean
+    timeOfSimulation: Integer
+}
+
+class Player {
+    username: Text
+    password: Text
+}
+
+class Map {
+   name: Text
+}
+
+class Scenario {
+  scenarioType: Text
+  simulationPeriod: Integer
+}
+
+class HistoricalEvent {
+    name: Text
+    startDate: Date
+    endDate: Date
+    temporalRestrictions: Map
+}
+
+class Route {
+    name: Text
+    routeType: Text
+}
+class Cargo {
+    cargoType: Text
+}
+
+class Station {
+  name: Text
+  constructionCosts: Decimal
+  stationType: Type
+}
+
+class Industry {
+   name: Text
+   industryType: Type
+}
+
+class City {
+   name: Text
+   houseBlocks: Integer
+}
+
+class Size {
+   width: Integer
+   height: Integer
+}
+
+class Position {
+   Xposition: Integer
+   Yposition: Integer
+}
+
+' ============= INTERFACE's =============
+
+interface StationType {
+    Depots
+    Stations
+    Terminals
+}
+
+interface IndustryType {
+    PrimarySectorIndustry
+    TransformingIndustry
+    MixedIndustry
+}
+
+' ============ RELATIONSHIP's ============
+
+'Simulator connections
+Simulator " * " -- " * " Industry : has >
+Simulator " *   " -- "*" City : has >
+Simulator "*" -- "1    " Map : has >
+Simulator "*" -- "1    " Scenario : has >
+Simulator " *  " -- " *  " Station : has >
+Simulator "*" -- " *  " Route : has >
+Simulator "*" -- "*" Cargo : generate >
+Simulator "*" -- " *   " HistoricalEvent : has >
+Simulator "0,1 " --- "0,1  " Player : create/plays <
+
+'Player connections
+Player "1     " -- "1" Simulator : start/pause >
+Player "1" -- "*" Station : build / manages >
+Player "1  " -- "*" Map : has >
+Player "1" - "*" Route : creates >
+
+'Map connections
+Map " *   " -- "1     " Size : has >
+Map "*" -- "*" Station : has >
+Map "*" -up "*" City : has >
+Map "*" -- "*" Scenario : has >
+Map "*" -- " *  " Industry : has >
+Map " *  " -- "1..* " Position : has >
+
+'Scenario connections
+Scenario " * " -- " * " HistoricalEvent : has >
+
+'HistoricalEvent connections
+HistoricalEvent "*" -- " *  " City : affects >
+HistoricalEvent " *   " -- "*" Industry : disrupts >
+
+'route connections
+Route " *    " -- "*" Cargo : assigned to >
+Route " *  " -- "2..*" Station : goes through >
+Route " *  " -- "*" City : connects >
+
+'Station connections
+Station " * " -- " * " Cargo : assigned to >
+Station "*" -left "1" StationType : has >
+Station "0,1    " -- "1       " Position : has >
+Station " *   " -- "1 " Size : has >
+
+'Industry connections
+Industry "0,1 " -- "1   " Position : has >
+Industry " * " -- "1 " IndustryType : has >
+Industry "*" -- "*" Cargo : produces >
+
+'City connections
+City "0,1 " -- "1  " Position : has >
+City "*" -- " *  " Cargo : demands >
+
+@enduml

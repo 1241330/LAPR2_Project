@@ -1,0 +1,193 @@
+@startuml
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+skinparam classAttributeIconSize 0
+
+class CreateRouteUI {
+    - controller: CreateRouteController
+    + CreateRouteUI(simulation: Simulation, actualScenario: Scenario)
+    + run()
+    - defineGeneratingRate(): int
+    - defineRoute(train: Train): List<Station>
+    - chooseFirstStation(fuelType: FuelType): Station
+    - chooseTrain(): Train
+}
+
+class CreateRouteController {
+    - simulation: Simulation
+    - actualScenario: Scenario
+    - actualMap: Map
+    + CreateRouteController(simulation: Simulation, actualScenario: Scenario)
+    + getStationList(): List<Station>
+    + getRailwayLineList(): List<RailwayLine>
+    + getTrainList(): List<Train>
+    + getSimulation(): Simulation
+    + getActualScenario(): Scenario
+    + getAvailableLinesToStation(station: Station, fuelType: FuelType): List<RailwayLine>
+    + availableStationConnections(station: Station, fuelType: FuelType): List<Station>
+    - verifyIfLinesPassesInStation(station: Station, fuelAvailableLines: List<RailwayLine>): List<RailwayLine>
+    - getRailwayLinesByFuelType(allLines: List<RailwayLine>, fuelType: FuelType): List<RailwayLine>
+    + verifyIfStationsHaveLines(fuelType: FuelType): List<Station>
+    + createRoute(train: Train, route: List<Station>, generatingRate: int): void
+    + assignAutomaticRoute(stationPath: List<Station>, fuelType: FuelType): void
+}
+
+class Map {
+    + getStationList(): List<Station>
+    + getRailwayLines(): List<RailwayLine>
+    ...()
+}
+
+class StationRepository {
+    + getStations(): List<Station>
+    - stations: List<Station>
+    ...()
+}
+
+class RailwayLineRepository {
+    + getAllRailwayLines(): List<RailwayLine>
+    - railwayLines: List<RailwayLine>
+    ...()
+}
+
+class Scenario {
+    + getTrainList(): List<Train>
+    - trainList: List<Train>
+    + getMap(): Map
+    ...()
+}
+
+class Simulation {
+    + getCurrentTime(): int
+    - currentTime: int
+    + addRoute(route: Route): void
+    - routes: List<Route>
+    + getTrainList(): List<Train>
+    - trainList: List<Train>
+    ...()
+}
+
+class Route {
+    - train: Train
+    - stations: List<Station>
+    - cargoesByStation: Map<Station, List<Cargo>>
+    - generatingRate: int
+    + Route(train: Train, stations: List<Station>, startTime: int, generatingRate: int)
+    + getTrain(): Train
+    + getStations(): List<Station>
+    + getCargoesByStation(): Map<Station, List<Cargo>>
+    + getGeneratingRate(): int
+}
+
+class Train {
+    + getName(): String
+    + getLocomotive(): Locomotive
+    ...()
+}
+
+class Station {
+    + getName(): String
+    ...()
+}
+
+class Locomotive {
+    + getName(): String
+    + getFuelType(): FuelType
+    ...()
+}
+
+enum FuelType {
+    STEAM
+    DIESEL
+    ELECTRICITY
+}
+
+enum RailwayLineType {
+    SINGLE_ELECTRIFIED
+    DOUBLE_ELECTRIFIED
+    SINGLE_NON_ELECTRIFIED
+    DOUBLE_NON_ELECTRIFIED
+}
+
+class RailwayLine {
+    + getStation1(): Station
+    + getStation2(): Station
+    + getDistance(): int
+    + getRailwayType(): RailwayLineType
+    ...()
+}
+
+class Industry {
+    - id: int
+    - name: String
+    - type: IndustryType
+    - assignedStation: Station
+    - inventory: Inventory
+    - updatedinventory: boolean
+    + Industry(name: String, type: IndustryType, position: Position)
+    + getName(): String
+    + getId(): int
+    + getType(): String
+    + getStationIdentifier(): Station
+    + setAssignedStation(Station): void
+    + getIndustryType(): IndustryType
+    + addResourceToInventory(Resource): int
+    + removeResourceFromInventory(Resource): int
+    + getResourceQuantity(ResourcesType): int
+    + existsResourceInInventory(ResourcesType): boolean
+    + getInventory(): Inventory
+    + isUpdatedInventory(): boolean
+    + setUpdatedInventory(boolean): void
+}
+
+class ResourcesType {
+    - name: String
+    - maxResources: int
+    - intervalBetweenResourceGeneration: int
+    - quantityProduced: int
+    + ResourcesType(name: String, maxResources: int, intervalBetweenResourceGeneration: int, quantityProduced: int)
+    + getName(): String
+    + setName(String): void
+    + getMaxResources(): int
+    + setMaxResources(int): void
+    + getIntervalBetweenResourceGeneration(): int
+    + setIntervalBetweenResourceGeneration(int): void
+    + getQuantityProduced(): int
+    + setQuantityProduced(int): void
+}
+
+enum IndustryType {
+    PRIMARY_SECTOR
+    TRANSFORMING
+    MIXED
+}
+
+Industry --> Station : assigned
+Industry *-- Inventory : has
+Industry *-- IndustryType
+Industry *- ResourcesType
+
+Map *-- StationRepository
+Map *-- RailwayLineRepository
+Map *- Scenario
+Simulation *-- Route
+Scenario *--  Train : contains
+Train *-- Locomotive : has
+RailwayLine *-- Station
+RailwayLine *-- Station
+Route *-- Train : has
+Route *-- Station : has
+
+CreateRouteUI .> CreateRouteController
+CreateRouteController ..> Simulation
+CreateRouteController ..> Scenario
+CreateRouteController .> Map
+CreateRouteController ..> FuelType
+CreateRouteController ..> RailwayLineType
+
+StationRepository o-- Station : contains
+RailwayLineRepository o-- RailwayLine : contains
+
+@enduml

@@ -1,0 +1,45 @@
+@startuml
+
+actor Editor
+participant ":System" as System
+title: System Sequence Diagram (SSD) - US01 - Create a Map
+
+activate Editor
+
+    Editor -> System : 1. Request to create new map
+    activate System
+    System --> Editor : 2. Prompt for map name and dimensions
+    deactivate System
+
+    Editor -> System : 3. Submit map name and dimensions (width, height)
+    activate System
+
+    alt Invalid input
+        loop Until valid inputs are provided
+            alt Invalid dimensions (AC1: The maps dimensions are positive integers.)
+                System -> System : 4.1 Validate dimensions
+                System --> Editor : 4.1.1 Show error message (invalid dimensions)
+                deactivate System
+                Editor -> System : 4.1.2 Re-enter details
+                activate System
+            else Valid dimensions
+                System -> System : 4.1 Dimensions are valid
+            end
+
+            alt Invalid map name (AC2: Map name should be a valid file name.)
+                System -> System : 4.2 Validate map name
+                System --> Editor : 4.2.1 Show error message (invalid filename)
+                deactivate System
+                Editor -> System : 4.2.2 Re-enter details
+                activate System
+            else Valid map name
+                System -> System : 4.2 Name is valid
+            end
+        end
+    end
+
+    System -> System : 5. Create map
+    System --> Editor : 6. Display operation success
+    deactivate System
+
+@enduml

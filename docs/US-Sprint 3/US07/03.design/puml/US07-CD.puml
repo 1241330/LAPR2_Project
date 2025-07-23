@@ -1,0 +1,130 @@
+@startuml
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+
+skinparam classAttributeIconSize 0
+
+class ShowStationUI {
+    - controller: ShowStationsController
+    + ShowStationUI(mapId: int)
+    + run(): void
+    - showStation(): void
+}
+
+class ShowStationsController {
+    - mapRepository: MapRepository
+    - actualMap: Map
+    + ShowStationsController(idMap: int)
+    - initializeRepositories(): void
+    + getActualMap(): Map
+    + listStations(): List<Station>
+}
+
+class Map {
+   + actualMap: Map
+   + getStationList(): List<Station>
+   ...()
+}
+
+class StationRepository{
+    + getStations(): List<Station>
+    - stations: List<Station>
+    ...()
+}
+
+class MapRepository {
+    + getMapById(id: int): Map
+    ...()
+}
+
+class Repositories {
+    + mapRepository
+    + {static} getInstance(): Repositories
+    + getMapRepository() : MapRepository
+    ...()
+}
+
+class Station {
+    + toLongString(): String
+    ...()
+}
+
+class Inventory {
+    + getAllResources(): List<Resource>
+    + resources: List<Resource>
+    ...()
+}
+
+class Resource {
+    + getResourceType(): ResourcesType
+    + resourceType: ResourcesType
+    ...()
+}
+
+class Building {
+    + getName(): String
+    ...()
+}
+
+enum BuildingType {
+    TELEGRAPH
+    TELEPHONE
+    SMALL_COFFEE
+    LARGE_COFFEE
+    CUSTOMS
+    POSTOFFICE
+    SMALL_HOTEL
+    LARGE_HOTEL
+    SILO
+    LIQUIDSTORAGE
+}
+
+class StationDTO {
+    - name: String
+    - type: String
+    - position: String
+    - direction: String
+    - buildings: List<String>
+    - cargoes: List<String>
+    + StationDTO(name, type, position, direction, buildings, cargoes)
+    + getName(): String
+    + getType(): String
+    + getPosition(): String
+    + getDirection(): String
+    + getBuildings(): List<String>
+    + getCargoes(): List<String>
+}
+
+class StationMapper {
+    + toDTO(station: Station): StationDTO
+    - StationMapper()
+}
+
+ShowStationsController ..> StationMapper
+ShowStationsController ..> StationDTO
+StationMapper ..> StationDTO
+
+ShowStationUI .> ShowStationsController
+
+ShowStationsController .> Map
+ShowStationsController .> MapRepository
+ShowStationsController -.> Repositories
+
+Repositories -> "1" Repositories: instance
+Repositories --> "1" MapRepository: mapRepository
+
+Map *- StationRepository
+
+MapRepository -> "*" Map: maps
+
+StationRepository o- Station: contains
+
+Station "1" --> "1" Inventory: contains
+Station "1" -> "*" Resource: owns
+Station "1" --> "1" Building: has
+
+ Building "1" -> "1" BuildingType: classied as
+
+@enduml

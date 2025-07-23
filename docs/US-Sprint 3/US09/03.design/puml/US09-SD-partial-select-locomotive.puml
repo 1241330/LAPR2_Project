@@ -1,0 +1,18 @@
+@startuml select_locomotive
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Player" as PLY
+participant ":BuyLocomotiveUI" as UI
+participant ":BuyTrainPartController" as CTRL
+
+group Select Locomotive
+    UI --> PLY : show available locomotives
+    activate PLY
+    PLY -> UI : select locomotive
+    deactivate PLY
+    UI -> CTRL : buyLocomotive(selectedLocomotive)
+end
+@enduml

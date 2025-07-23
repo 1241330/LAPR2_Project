@@ -1,0 +1,54 @@
+@startuml add_industry_to_map
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Editor" as EDT
+participant ":AddIndustryUI" as UI
+participant ":AddIndustryController" as CTRL
+participant "actualMap\n:Map" as MAP
+participant "industryRepository\n:IndustryRepository" as IND_REPO
+participant "industry\n:Industry" as IND
+
+group Add Industry to Map
+    activate EDT
+    activate UI
+    UI -> CTRL : addIndustry(industryTypeDesc, industryName, X, Y)
+    activate CTRL
+    alt industryTypeDesc == "Primary Sector Industry"
+        CTRL -> CTRL : create PrimaryIndustry(industryName, type, position)
+    else industryTypeDesc == "Transforming Industry"
+        CTRL -> CTRL : create TransformingIndustry(industryName, type, position)
+    else industryTypeDesc == "Mixed Industry"
+        CTRL -> CTRL : create MixedIndustry(industryName, type, position)
+    end
+    CTRL -> MAP : addElement(industry)
+    activate MAP
+
+    alt success
+        MAP --> IND_REPO : addIndustry(industry)
+        activate IND_REPO
+        IND_REPO -> IND_REPO : add industry to list
+        IND_REPO --> MAP : confirmation
+        deactivate IND_REPO
+
+        MAP -> MAP : update occupied positions
+        MAP --> CTRL : success
+    else failure
+        MAP --> CTRL : failure
+    end
+
+    deactivate MAP
+    CTRL --> UI : return success/failure
+    deactivate CTRL
+
+    alt success
+        UI --> EDT : show message: Industry added successfully
+    else
+        UI --> EDT : show message: Failed to add industry
+    end
+    deactivate UI
+    deactivate EDT
+end
+@enduml

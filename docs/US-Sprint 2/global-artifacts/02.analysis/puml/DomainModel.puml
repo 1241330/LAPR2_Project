@@ -1,0 +1,369 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+hide methods
+
+title Domain Model
+
+class Map {
+    id: Integer
+    name: String
+    size: Size
+    mapElementsUsed: List<MapElement>
+    occupiedPositions: List<Position>
+}
+
+class Size {
+    width: Integer
+    height: Integer
+}
+
+class Position {
+    x: Integer
+    y: Integer
+}
+
+abstract class MapElement {
+    position: Position
+    occupiedPositions: List<Position>
+}
+
+class Station {
+    name: String
+    identifier: Integer
+    type: StationType
+    position: Position
+    direction: String
+    buildings: List<Building>
+    inventory: Inventory
+    associations: List<StationAssociations>
+}
+
+class City{
+    id: Integer
+    name: String
+    position: Position
+    houseBlocks: List<HouseBlock>
+    houseBlocksPositions: List<Position>
+}
+
+class HouseBlock {
+    position: Position
+    assignedStation: Station
+    productions: List<HouseBlockResource>
+    id: Integer
+}
+
+abstract class Industry {
+    id: Integer
+    name: String
+    type: IndustryType
+    assignedStation: Station
+}
+
+class PrimaryIndustry {
+    primaryResource: PrimaryResource
+    maxResources: Integer
+    intervalBetweenResourceGeneration: Integer
+    quantityProduced: Integer
+}
+
+class MixedIndustry {
+    exportedResources: List<ResourcesType>
+    importedResources: List<ResourcesType>
+    transformedResources: List<ResourcesType>
+}
+
+class TransformingIndustry {
+    transformingResource: TransformingResource
+    primaryResources: List<ResourcesType>
+}
+
+class Resource {
+    resourceType: ResourcesType
+    quantity: Integer
+}
+
+class ResourcesType {
+    name: String
+    maxResources: Integer
+    intervalBetweenResourceGeneration: Integer
+    quantityProduced: Integer
+}
+
+class PrimaryResource {
+}
+
+class TransformingResource {
+    neededResources: List<ResourcesType>
+}
+
+class Inventory {
+    resources: List<Resource>
+}
+
+class Train {
+    locomotive: Locomotive
+    carriages: List<Carriage>
+    name: String
+    inventory: Inventory
+    maxInventorySpace: Integer
+}
+
+class Locomotive {
+    name: String
+    power: Double
+    acceleration: Double
+    topSpeed: Double
+    startYearOperation: Integer
+    acquisitionPrice: Integer
+    fuelType: FuelType
+    railroadLineAssosiated: Integer
+    maxCarriages: Integer
+}
+
+class Carriage {
+    name: String
+    startYearOperation: Integer
+    acquisitionCost: Integer
+    maxResourceCapacity: Integer
+}
+
+class Event {
+    name: String
+    interval: Integer
+    nextGenerationDate: Integer
+}
+
+class GenerationEvent {
+    station: Station
+    resource: Resource
+}
+
+class ExportEvent {
+    station: Station
+    resourceType: ResourcesType
+}
+
+class TransformingEvent {
+    station: Station
+    transformingResource: ResourcesType
+}
+
+class Route {
+    name: String
+    train: Train
+    stations: List<Station>
+    nextInteractionDate: Integer
+    intervalBetweenInteractions: Integer
+}
+
+class Scenario {
+    name: String
+    map: Map
+    initialMoney: Integer
+    beginningDate: TimeDate
+    endDate: TimeDate
+    typeResourceList: List<ResourcesType>
+    trainList: List<Train>
+}
+
+class HistoricalEvent {
+    actualDate: Integer
+}
+
+class Node {
+    x: Integer
+    y: Integer
+    cost: Integer
+    estimate: Integer
+    parent: Node
+}
+
+class Building {
+    type: BuildingType
+}
+
+class RailwayLine {
+    id: Integer
+    positionsRailwayLine: List<Position>
+    station1: Station
+    station2: Station
+    type: RailwayLineType
+}
+enum RailwayLineType {
+    SINGLE_ELECTRIFIED
+    DOUBLE_ELECTRIFIED
+    SINGLE_NON_ELECTRIFIED
+    DOUBLE_NON_ELECTRIFIED
+}
+
+class Simulation {
+    currentTime: Integer
+    maxTime: Integer
+    converterMonthSecond: Integer
+    actualMoney: Integer
+    routes: List<Route>
+}
+
+class HouseBlockResource {
+    name: String
+    maxResources: Integer
+    intervalBetweenResourceGeneration: Integer
+    quantityProduced: Integer
+}
+
+enum BuildingType {
+    TELEGRAPH,
+    TELEPHONE,
+    SMALL_COFFEE,
+    LARGE_COFFEE,
+    CUSTOMS,
+    POSTFICE,
+    SMALL_HOTEL,
+    LARGE_HOTEL,
+    SILO,
+    LIQUIDSTORAGE
+}
+
+enum IndustryType {
+    PRIMARY_SECTOR,
+    TRANSFORMING,
+    MIXED
+}
+
+enum StationType {
+    DEPOT,
+    STATION,
+    TERMINAL
+}
+
+enum FuelType {
+    STEAM,
+    DIESEL,
+    ELECTRICITY
+}
+
+interface StationAssociations {
+}
+
+class TimeDate {
+    year: Integer
+    month: Integer
+}
+
+class RouteEvent {
+    route: Route
+    secundaryResources: List<ResourcesType>
+}
+
+class Fuel {
+    fuelType: FuelType
+}
+
+
+'------------
+'Heranças
+'------------
+MapElement <|-- Station
+MapElement <|-- City
+MapElement <|-- Industry
+MapElement <|-- RailwayLine
+
+Industry <|-- MixedIndustry
+Industry <|-- PrimaryIndustry
+Industry <|-- TransformingIndustry
+
+Event <|-- RouteEvent
+Event <|-- ExportEvent
+Event <|-- GenerationEvent
+Event <|-- TransformingEvent
+
+ResourcesType <|-- TransformingResource
+ResourcesType <|-- HouseBlockResource
+ResourcesType <|-- PrimaryResource
+
+StationAssociations <|-- Industry
+
+'------------
+'Relações
+'------------
+Map "1" --> "*" MapElement : contains
+Map "1" --> "*" Position : occupiedPositions
+Map "1" --> "1" Size : has
+
+Node "1" --> "1" Node : parent
+
+Inventory "1" --> "*" Resource : stores
+Resource "*" --> "1" ResourcesType : isOfType
+
+Train "1" --> "*" Carriage : has
+Train "1" --> "1" Locomotive : has
+Train "1" --> "*" Resource : currentCargo
+
+Scenario "1" --> "1" TimeDate : startDate
+Scenario "1" --> "1" TimeDate : endDate
+Scenario "1" --> "*" Locomotive : availableLocomotives
+Scenario "1" --> "*" FuelType : availableFuels
+Scenario "1" --> "*" Station : ports
+
+Route "*" --> "1" Train : assignedTrain
+Route "1" --> "1" Station : origin
+Route "1" --> "1" Station : destination
+Route "1" --> "*" RailwayLine : lines
+Route "1" --> "*" Resource : assignedCargo
+
+City "1" --> "*" Building : has
+City "1" --> "*" HouseBlock : includes
+
+HouseBlock "1" --> "*" HouseBlockResource : resources
+HouseBlock "1" --> "1" Station : assignedStation
+
+Station "1" --> "1" StationType : type
+Station "1" --> "1" Position : position
+Station "1" --> "1" Inventory : inventory
+Station "1" --> "*" Building : buildings
+Station "1" --> "*" Resource : cargo
+Station "1" --> "*" StationAssociations : associations
+
+RailwayLine "1" --> "2" Station : connects
+RailwayLine "1" --> "1" RailwayLineType : type
+RailwayLine "1" --> "*" Node : contains
+
+Building "1" --> "1" BuildingType : type
+
+Fuel "1" --> "1" FuelType : type
+
+Locomotive "1" --> "1" Fuel : uses
+
+HistoricalEvent "1" --> "1" TimeDate : date
+
+RouteEvent "1" --> "1" Route : route
+ExportEvent "1" --> "1" Resource : resourceToExport
+GenerationEvent "1" --> "1" Resource : resourceToGenerate
+TransformingEvent "1" --> "1" Resource : input
+TransformingEvent "1" --> "1" Resource : output
+
+Industry "1" --> "1" IndustryType : type
+Industry "1" --> "1" Position : position"
+
+Simulation "*" --> "*" City : use
+Simulation "*" --> "*" Station : use
+Simulation "*" --> "*" HistoricalEvent : use
+Simulation "*" --> "1" TimeDate : use
+Simulation "*" --> "*" Locomotive : use
+Simulation "*" --> "1" Map : use
+Simulation "*" --> "*" Building : use
+Simulation "*" --> "*" RailwayLine : use
+Simulation "*" --> "*" Train : use
+Simulation "*" --> "*" Carriage : use
+Simulation "*" --> "*" Route : use
+Simulation "*" --> "*" Event : use
+Simulation "*" --> "1" Scenario : use
+Simulation "*" --> "*" Industry : use
+Simulation "*" --> "*" Resources : use
+
+@enduml

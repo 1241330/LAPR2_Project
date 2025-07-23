@@ -1,0 +1,114 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Player" as PLY
+participant ":AddUpgradeStationUI" as UI
+participant ":AddUpgradeStationController" as CTRL
+participant "station\n:Station" as ST
+participant "simulation\n:Simulation" as SIM
+participant "buildingType\n:BuildingType" as BT
+participant "building\n:Building" as BLD
+
+activate PLY
+PLY -> UI : start AddUpgradeStationUI(station, simulation)
+activate UI
+UI -> CTRL : new AddUpgradeStationController(station, simulation)
+activate CTRL
+CTRL --> UI : controller created
+deactivate CTRL
+
+group Building Selection
+    loop until valid option or cancel
+        UI -> CTRL : getAvailableBuildingTypes()
+        activate CTRL
+            CTRL -> SIM : getCurrentTime()
+            activate SIM
+            SIM --> CTRL : currentTime
+            deactivate SIM
+
+            CTRL -> ST : getBuildings()
+            activate ST
+            ST --> CTRL : list of existing buildings
+            deactivate ST
+
+            CTRL --> UI : list of available building types
+        deactivate CTRL
+
+        UI --> PLY : show available building options
+        PLY -> UI : selects building type (or cancels)
+
+        alt cancel
+            UI --> PLY : operation cancelled
+        else invalid option
+            UI --> PLY : error message
+        else valid option
+            UI -> CTRL : addBuildingToStation(buildingType)
+            activate CTRL
+
+                CTRL -> SIM : getActualMoney()
+                activate SIM
+                SIM --> CTRL : actualMoney
+                deactivate SIM
+
+                alt not enough money
+                    CTRL --> UI : "Not enough money to add this building."
+                    UI --> PLY : show error
+                else
+                    CTRL -> ST : getAvailableBuildingTypes()
+                    activate ST
+                    ST --> CTRL : list of available buildings
+                    deactivate ST
+
+                    alt building already exists
+                        CTRL --> UI : "A building of this type already exists in the station."
+                        UI --> PLY : show error
+                    else building replaces another
+                        CTRL -> ST : getAvailableBuildingTypes()
+                        activate ST
+                        ST --> CTRL : list of available building Types
+                        deactivate ST
+
+                        CTRL -> ST : removeBuilding(building to replace)
+                        activate ST
+                        ST --> CTRL : building removed
+                        deactivate ST
+                        CTRL -> BLD : new Building(buildingType)
+                        activate BLD
+                        BLD --> CTRL : building added
+                        deactivate BLD
+                        CTRL -> ST : addBuilding(building)
+                        activate ST
+                        ST --> CTRL : building added
+                        deactivate ST
+                        CTRL --> UI : "Building was replaced successfully."
+                        UI --> PLY : show success
+                    else building has already been replaced
+                        CTRL --> UI : "Cannot add this building because it has already been replaced."
+                        UI --> PLY : show error
+                    else add new building
+                        CTRL -> BLD : new Building(buildingType)
+                        activate BLD
+                        BLD --> CTRL : building created
+                        deactivate BLD
+                        CTRL -> ST : addBuilding(building)
+                        activate ST
+                        ST --> CTRL : building added
+                        deactivate ST
+                        CTRL -> SIM : setActualMoney(actualMoney - cost)
+                        activate SIM
+                        SIM --> CTRL : money updated
+                        deactivate SIM
+                        CTRL --> UI : "Building was successfully added to the station!"
+                        UI --> PLY : show success
+                    end
+                end
+            deactivate CTRL
+        end
+    end
+    deactivate UI
+    deactivate PLY
+end
+@enduml

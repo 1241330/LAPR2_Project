@@ -1,0 +1,330 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Editor" as EDT
+participant ":AddCityUI" as UI
+participant ":AddCityController" as CTRL
+participant "Repositories" as REPOS
+participant "repositories\n:Repositories" as REPOS_SINGLETON
+participant "mapRepository\n:MapRepository" as MAP_REPO
+participant "cityRepository\n:CityRepository" as CITY_REPO
+participant "houseBlockRepository\n:HouseBlockRepository" as HB_REPO
+participant "actualMap\n:Map" as MAP
+participant "sizeMap\n:Size" as SIZE
+participant "position\n:Position" as POS
+participant "mapElement\n:MapElement" as MAP_ELEM
+participant "city\n:City" as CITY
+participant "houseBlock\n:HouseBlock" as HB
+
+activate EDT
+    EDT -> UI : start AddCityUI(mapId)
+    activate UI
+    UI -> CTRL** : new AddCityController(mapId)
+    activate CTRL
+
+    CTRL -> REPOS : getInstance()
+    activate REPOS
+    REPOS --> CTRL : repositories
+    deactivate REPOS
+
+    CTRL -> REPOS_SINGLETON : getMapRepository()
+    activate REPOS_SINGLETON
+    REPOS_SINGLETON --> CTRL : mapRepository
+    deactivate REPOS_SINGLETON
+
+    CTRL -> MAP_REPO : getMapById(mapId)
+    activate MAP_REPO
+    MAP_REPO -> MAP** : find map by id
+    MAP_REPO --> CTRL : return actualMap
+    deactivate MAP_REPO
+
+    CTRL --> UI : return actualMap
+    deactivate CTRL
+
+    group City Name Input
+        loop until valid name
+            UI --> EDT : ask for city name
+            EDT -> UI : enter nameCity
+            UI -> UI : check name
+            alt is invalid name
+                UI --> EDT : error message: invalid City name
+            else
+                UI -> CTRL : setCityName(nameCity)
+                activate CTRL
+                    CTRL -> CTRL : save nameCity
+                    CTRL --> UI : city name accepted
+                deactivate CTRL
+            end
+        end
+    end
+    group City Position Input
+        loop until city position is valid
+            loop until valid X value
+                UI --> EDT : ask for city X position
+                EDT -> UI : enter X
+                UI -> CTRL : getWidthMap()
+                activate CTRL
+                    CTRL -> MAP : getSize()
+                    activate MAP
+                        MAP -> SIZE** : get map size
+                        MAP --> CTRL : return mapSize
+                    deactivate MAP
+                    CTRL -> SIZE : getWidthMap()
+                    activate SIZE
+                        SIZE --> CTRL : return mapWidth
+                    deactivate SIZE
+                    CTRL --> UI : return mapWidth
+                deactivate CTRL
+                alt (0 < X < mapWidth)
+                    UI -> UI : save X value
+                else
+                    UI --> EDT : error message: invalid X value
+                end
+            end
+            loop until valid Y value
+                UI --> EDT : ask for city Y position
+                EDT -> UI : enter Y
+                UI -> CTRL : getHeightMap()
+                activate CTRL
+                    CTRL -> MAP : getSize()
+                    activate MAP
+                        MAP -> SIZE : get map size
+                        MAP --> CTRL : return mapSize
+                    deactivate MAP
+                    CTRL -> SIZE : getHeight()
+                    activate SIZE
+                        SIZE --> CTRL : return mapHeight
+                    deactivate SIZE
+                    CTRL --> UI : return mapHeight
+                deactivate CTRL
+                alt (0 < Y < mapHeight)
+                    UI -> UI : save yValue
+                else
+                    UI --> EDT : error message: invalid Y value
+                end
+            end
+            UI -> POS** : positionCity = new Position(X - 1,Y - 1)
+            UI -> CTRL : getOccupiedPositionsMap()
+            activate CTRL
+                CTRL -> MAP : getOccupiedPositions()
+                activate MAP
+                    MAP -> MAP : listAllOccupiedPositions()
+                    MAP -> MAP : occupiedPositions.clear()
+                    loop for each mapElement in mapElementsUsed
+                        MAP -> MAP_ELEM** : getOccupiedPositions()
+                        activate MAP_ELEM
+                            MAP_ELEM --> MAP : List<Position> occupiedByElement
+                        deactivate MAP_ELEM
+                        MAP -> MAP : occupiedPositions.addAll(occupiedByElement)
+                    end
+                    MAP --> CTRL : return new ArrayList<>(occupiedPositions)
+                deactivate MAP
+                CTRL --> UI : return List<Position> occupiedPositions
+            deactivate CTRL
+            alt position occupied
+                UI --> EDT : Error message: Position already occupied
+            else
+                UI -> CTRL : setPositionCity(positionCity)
+                activate CTRL
+                CTRL -> CTRL : save positionCity
+                CTRL --> UI : city position accepted
+                deactivate CTRL
+            end
+        end
+    end
+    group House Blocks Input Mode
+            UI --> EDT : ask automatic or manual house blocks input
+            EDT -> UI : choose mode
+            alt automatic mode
+                UI -> CTRL : getNumberFreePositions()
+                activate CTRL
+                    CTRL -> CTRL : ((mapHeight * mapWidth) - occupiedPositions.size())
+                    CTRL --> UI : return numberFreePositions
+                deactivate CTRL
+                loop until number house blocks is valid (1 < n < nFreePositions)
+                    UI --> EDT : ask number of house blocks
+                    EDT -> UI : enter number
+                    alt invalid value
+                        UI --> EDT : Error message: invalid value
+                    else
+                        UI -> UI : save nHouseBlocks
+                    end
+                end
+                UI -> CTRL : setNumberHouseBlocks(nHouseBlocks)
+                activate CTRL
+                    CTRL -> CTRL : save numberHouseBlocks
+                    CTRL --> UI : numberHouseBlocks accepted
+                deactivate CTRL
+                UI -> CTRL : setAutomaticHouseBlocks()
+                activate CTRL
+                    CTRL -> CTRL : houseBlockList.clear()
+                    CTRL -> CTRL : addedHouses = new ArrayList<>().
+                    CTRL -> CTRL : centerX = getPositionX()
+
+                    CTRL -> CTRL : centerY = getPositionY()
+                    CTRL -> CTRL : scaleValue = 0.065
+                    CTRL -> CTRL :  nAttempts = 0
+                    note over CTRL : other variables read above
+                    loop while addedHouses.size() < numberHouseBlocks
+                        alt nAttempts == 0
+                            CTRL -> CTRL : scaleValue = 0.065
+                        else
+                            CTRL -> CTRL : scaleValue *= 1.005
+                        end
+                        CTRL -> CTRL : sigma = targetHouses * scaleValue
+                        CTRL -> CTRL : dx = rand.nextGaussian() * sigma
+                        CTRL -> CTRL : dy = rand.nextGaussian() * sigma
+                        CTRL -> CTRL : x = round(centerX + dx)
+                        CTRL -> CTRL : y = round(centerY + dy)
+                        alt x < 0 || x >= width || y < 0 || y >= height
+                            note over CTRL : off-limits position, ignore
+                        else
+                            CTRL -> POS** : new Position(x, y)
+                            CTRL -> CTRL : check if busy or already added
+                            alt ocupada ou repetida
+                                CTRL -> CTRL : nAttempts++
+                            else
+                                CTRL -> CTRL : distance = Math.sqrt(dx * dx + dy * dy)
+                                CTRL -> CTRL : acceptanceProbability = Math.exp(-0.5 * Math.pow(distance / sigma, 2))
+                                alt accepts position
+                                    CTRL -> CTRL : nAttempts = 0
+                                    CTRL -> HB** : new HouseBlock(pos)
+                                    CTRL -> CTRL : houseBlockList.add(houseBlock)
+                                    CTRL -> CTRL : addedHouses.add(position)
+                                else
+                                    note over CTRL : rejected by Gaussian distribution
+                                end
+                            end
+                        end
+                    end
+                    CTRL --> UI : automatic house blocks successfully
+                deactivate CTRL
+            else manual mode
+                UI -> UI : List<HouseBlock> houseBlocksList = new ArrayList<>()
+                note over UI : previously read occupiedPositions, mapWidth, mapHeight
+                loop until valid X value
+                    UI --> EDT : ask for X value
+                    EDT -> UI : enter X
+                    alt (0 < X < mapWidth)
+                        UI -> UI : save X value
+                    else
+                        UI --> EDT : error message: invalid X value
+                    end
+                end
+                loop until valid Y value
+                    UI --> EDT : ask for Y value
+                    EDT -> UI : enter Y
+                    alt (0 < X < mapHeight)
+                        UI -> UI : save Y value
+                    else
+                        UI --> EDT : error message: invalid Y value
+                    end
+                end
+                UI -> POS** : newPosition = new Position(X - 1,Y - 1)
+                alt position occupied
+                    UI --> EDT : Error message: Position already occupied
+                else
+                    UI -> CTRL : cityFarFromTheCentre(newPosition)
+                    activate CTRL
+                        CTRL -> CTRL : LIMIT_HOUSE_BLOCK = 20;
+                        note over CTRL : predefined value
+                        CTRL -> CTRL : getEuclideanDistance(cityPosition,newPosition))
+                        CTRL -> POS : cityPosition.getX()
+                        activate POS
+                            POS --> CTRL : return xCityPosition
+                        deactivate POS
+                        CTRL -> POS : newPosition.getX()
+                        activate POS
+                            POS --> CTRL : return xNewPosition
+                        deactivate POS
+                        CTRL -> POS : cityPosition.getY()
+                        activate POS
+                            POS --> CTRL : return yCityPosition
+                        deactivate POS
+                            CTRL -> POS : newPosition.getY()
+                        activate POS
+                            POS --> CTRL : return yNewPosition
+                        deactivate POS
+                        CTRL -> CTRL : dx = xCityPosition - xNewPosition
+                        CTRL -> CTRL : dx = yCityPosition - yNewPosition
+                        CTRL -> CTRL : euclideanDistance = Math.sqrt(dx * dx + dy * dy)
+                        alt euclideanDistance > LIMIT_HOUSE_BLOCK
+                            CTRL --> UI : return validation = true
+                        else
+                            CTRL --> UI : return validation = false
+                        end
+                    deactivate CTRL
+                    alt validation
+                        UI --> EDT : notice: New House Block significantly away from the City centre
+                    end
+                    UI -> HB** : newHouseBlock = new HouseBlock(newPosition)
+                    UI -> UI : houseBlocksList.add(newHouseBlock)
+                    UI -> UI : occupiedPositionsMap.add(newPosition)
+                end
+            end
+        end
+
+    group Add City to Map
+        UI -> CTRL : addCityToMap()
+        activate CTRL
+            CTRL -> CITY** : city = new City(cityName, positionCity, houseBlockList, houseBlockPositions)
+            CTRL -> MAP : addElement(city)
+            activate MAP
+                alt success
+                    MAP --> REPOS : getInstance()
+                    activate REPOS
+                        REPOS -> MAP : repositories
+                    deactivate REPOS
+                    MAP --> REPOS_SINGLETON : getCityRepository()
+                    activate REPOS_SINGLETON
+                        REPOS_SINGLETON -> MAP : cityRepository
+                    deactivate REPOS_SINGLETON
+                    MAP --> REPOS_SINGLETON : getHouseBlockRepository()
+                    activate REPOS_SINGLETON
+                        REPOS_SINGLETON -> MAP : houseBlockRepository
+                    deactivate REPOS_SINGLETON
+                    MAP --> CITY_REPO : addCity(city)
+                    activate CITY_REPO
+                        CITY_REPO -> MAP : confirmation
+                    deactivate CITY_REPO
+                    MAP -> CITY : getHouseBlocks()
+                    activate CITY
+                        return List<HouseBlock> houseBlockList
+                    deactivate CITY
+
+                    loop each houseBlock in houseBlockList
+                        MAP --> HB_REPO : addHouseBlock(houseBlock)
+                        activate HB_REPO
+                            HB_REPO -> HB_REPO : houseBlocks.add(houseBlock)
+                            HB_REPO -> MAP : confirmation
+                        deactivate HB_REPO
+                    end
+                    MAP -> MAP : mapElementUsed.add(city)
+                    MAP -> MAP : listAllOccupiedPositions()
+                    MAP -> MAP : occupiedPositions.clear()
+                    loop for each mapElement in mapElementsUsed
+                        MAP -> MAP_ELEM** : getOccupiedPositions()
+                        activate MAP_ELEM
+                            MAP_ELEM --> MAP : List<Position> occupiedByElement
+                        deactivate MAP_ELEM
+                        MAP -> MAP : occupiedPositions.addAll(occupiedByElement)
+                    end
+                    MAP --> CTRL : return new ArrayList<>(occupiedPositions)
+                    MAP -> UI : return validation = true
+                else failure
+                    MAP -> UI : return validation = false
+                end
+            deactivate MAP
+        deactivate CTRL
+        alt validation
+            UI --> EDT: shows message: Add city to the map
+        else
+            UI --> EDT: shows message: Don't add city to the map
+        end
+    end
+    deactivate UI
+deactivate EDT
+@enduml

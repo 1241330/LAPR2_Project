@@ -1,0 +1,127 @@
+@startuml
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+skinparam classAttributeIconSize 0
+
+class CreateRouteUI {
+    - controller: CreateRouteController
+    + CreateRouteUI(Simulation simulation, Scenario actualScenario)
+    + run()
+    - defineGeneratingRate(): int
+    - defineRoute(train: Train): List<Station>
+    - chooseFirstStation(fuelType: FuelType): Station
+    - chooseTrain(): Train
+}
+
+class CreateRouteController {
+    - simulation: Simulation
+    - actualScenario: Scenario
+    - actualMap: Map
+    + CreateRouteController(simulation: Simulation, actualScenario: Scenario)
+    + getStationList(): List<Station>
+    + getRailwayLineList(): List<RailwayLine>
+    + getTrainList(): List<Train>
+    + getSimulation(): Simulation
+    + getActualScenario(): Scenario
+    + getAvailableLinesToStation(station: Station, fuelType: FuelType): List<RailwayLine>
+    + availableStationConnections(station: Station, fuelType: FuelType): List<Station>
+    - verifyIfLinesPassesInStation(station: Station, fuelAvailableLines:  List<RailwayLine>): List<RailwayLine>
+    - getRailwayLinesByFuelType(allLines: List<RailwayLine>, fuelType: FuelType): List<RailwayLine>
+    + verifyIfStationsHaveLines(fuelType: FuelType): List<Station>
+    + createRoute(train: Train, route: List<Station>, generatingRate: int): void
+}
+
+class Map {
+    + getStationList(): List<Station>
+    + getRailwayLines(): List<RailwayLine>
+    ...()
+}
+
+class StationRepository {
+    + getStations(): List<Station>
+    - stations: List<Station>
+    ...()
+}
+
+class RailwayLineRepository {
+    + getAllRailwayLines(): List<RailwayLine>
+    - railwayLines: List<RailwayLine>
+    ...()
+}
+
+class Scenario {
+    + getTrainList(): List<Train>
+    - trainList: List<Train>
+    ...()
+}
+
+class Simulation {
+    + getCurrentTime(): int
+    - currentTime: int
+    + addRoute(route: Route): void
+    - routes: List<Route>
+    + getTrainList(): List<Train>
+    - trainList:  List<Train>
+    ...()
+}
+
+class Route {
+    - train: Train
+    - stations: List<Station>
+    - cargoesByStation: Map<Station, List<Cargo>>
+    - generatingRate: int
+    + Route(train: Train, stations: List<Station>, startTime: int, generatingRate: int)
+    + getTrain(): Train
+    + getStations(): List<Station>
+    + getCargoesByStation(): Map<Station, List<Cargo>>
+    + getGeneratingRate(): int
+}
+
+class Train {
+    + getName(): String
+    + getLocomotive(): Locomotive
+    ...()
+}
+
+class Station {
+    + getName(): String
+    ...()
+}
+
+enum FuelType {
+    STEAM
+    DIESEL
+    ELECTRICITY
+}
+
+enum RailwayLineType {
+    SINGLE_ELECTRIFIED
+    DOUBLE_ELECTRIFIED
+    SINGLE_NON_ELECTRIFIED
+    DOUBLE_NON_ELECTRIFIED
+}
+
+class RailwayLine {
+
+}
+
+CreateRouteUI .> CreateRouteController
+CreateRouteController .> Map
+Map --> "1" StationRepository : stationRepository
+Map --> "1" RailwayLineRepository : railwayLineRepository
+CreateRouteController -.> Scenario
+CreateRouteController -.> FuelType
+CreateRouteController -.> RailwayLineType
+CreateRouteController .> Simulation
+Simulation --> "*" Route : routes
+Route --> "1" Train : train
+Route --> "*" Station : stations
+Train --> "1" Locomotive : locomotive
+StationRepository --> "*" Station : stations
+RailwayLineRepository --> "*" RailwayLine : railwayLines
+Scenario --> "*" Train : trainList
+Simulation --> "*" Train : trainList
+
+@enduml

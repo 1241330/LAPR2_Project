@@ -1,0 +1,108 @@
+@startuml
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+autonumber
+
+actor "Player" as PLAYER
+participant ":MaintenanceRailwayLineUI" as UI
+participant ":MaintenanceRailwayLineController" as CTRL
+participant "station\n:Station" as STATION
+participant "railwatLine\n:RailwayLine" as RAILWAYLINE
+participant "Utils_MDISC" as UTILS
+
+activate PLAYER
+    PLAYER -> UI : request railway line maintenance
+    activate UI
+
+        UI -> CTRL : getAllLines()
+        activate CTRL
+            CTRL -> RAILWAYLINE : access list of lines
+            CTRL --> UI : list of lines
+        deactivate CTRL
+
+        UI -> CTRL : getSizeStationList()
+        activate CTRL
+            CTRL -> STATION : access list of stations
+            CTRL --> UI : number of stations
+        deactivate CTRL
+
+        UI -> UI : chooseRailwayLineType()
+        UI -> CTRL : setRailwayLinesType(type)
+        UI -> CTRL : filterRailwayLinesType()
+
+        UI -> CTRL : isNotGraphConnected()
+        activate CTRL
+            CTRL -> RAILWAYLINE : check connections
+            CTRL -> STATION : check visited stations
+            CTRL --> UI : true/false
+        deactivate CTRL
+
+        alt graph not connected
+            UI -> UTILS : printMessage(warning)
+            deactivate PLAYER
+        else graph connected
+            UI -> UTILS : printMessage(connected)
+            UI -> CTRL : setValidStationsConnectedLines()
+            UI -> CTRL : calculateVertexDegrees()
+            UI -> CTRL : setEulerianPathType()
+            activate CTRL
+                CTRL --> UI : true/false
+            deactivate CTRL
+
+            alt not possible Eulerian route
+                UI -> UTILS : printMessage(impossibility warning)
+            else possible Eulerian route
+                UI -> UTILS : printMessage(graph type)
+                UI -> UI : chooseInitialStation()
+                UI -> CTRL : getValidInitialStations()
+                activate CTRL
+                    CTRL -> STATION : get valid stations
+                    CTRL --> UI : list of valid stations
+                deactivate CTRL
+
+                UI -> CTRL : addStationToStartingStations(station)
+                UI -> UI : chooseTheNextStations()
+                loop select next stations
+                    UI -> CTRL : getLastStartingStation()
+                    UI -> CTRL : getStationsConnectedAnotherStation(station)
+                    CTRL -> RAILWAYLINE : get connected lines
+                    CTRL -> STATION : get connected stations
+                    UI -> CTRL : removeStationsInList(list, alreadySelected)
+                    alt more than one valid station
+                        UI -> UTILS : printMenu(current path)
+                        UI -> UTILS : chooseOptionPrintMenuAndManualReturn()
+                        UI -> CTRL : addStationToStartingStations(station)
+                    else only one valid station
+                        UI -> CTRL : addStationToStartingStations(station)
+                    end
+                end
+
+                UI -> CTRL : setFinalPath()
+                activate CTRL
+                    CTRL -> RAILWAYLINE : check path
+                    CTRL -> STATION : check path
+                    CTRL --> UI : true/false
+                deactivate CTRL
+
+                alt path not found
+                    UI -> UTILS : printMessage(warning)
+                else path found
+                    UI -> CTRL : getFinalMaintenancePath()
+                    CTRL -> STATION : get path stations
+                    UI -> CTRL : convertStationsToNames()
+                    UI -> UTILS : printMenu(final path)
+                end
+
+                UI -> CTRL : visualisationOfRailwayNetwork()
+                activate CTRL
+                    CTRL -> UTILS : visualizeRailwayNetworkStream(...)
+                    CTRL -> UTILS : visualizeRailwayNetworkFile(...)
+                deactivate CTRL
+            end
+        end
+    deactivate UI
+deactivate PLAYER
+
+@enduml

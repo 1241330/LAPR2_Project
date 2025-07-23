@@ -1,0 +1,44 @@
+@startuml
+participant ":AddUpgradeStationUI" as UI
+participant ":AddUpgradeStationController" as CTRL
+participant "simulation\n:Simulation" as SIM
+participant "station\n:Station" as ST
+participant "building\n:Building" as BLD
+
+autonumber
+UI -> CTRL : addBuildingToStation(buildingType)
+activate UI
+activate CTRL
+
+CTRL -> SIM : getActualMoney()
+activate SIM
+SIM --> CTRL : actualMoney
+deactivate SIM
+
+alt Not enough money
+    CTRL --> UI : "Not enough money to add this building."
+else Enough money
+    CTRL -> ST : getAvailableBuildingTypes()
+    activate ST
+    ST --> CTRL : list of available building Types
+    deactivate ST
+
+    alt Building already exists
+        CTRL --> UI : "A building of this type already exists in the station."
+    else Replace existing building
+        CTRL -> ST : removeBuilding(oldBuilding)
+        CTRL -> BLD** : new Building(buildingType)
+        CTRL -> ST : addBuilding(building)
+        CTRL --> UI : "Building was replaced successfully."
+    else Already replaced
+        CTRL --> UI : "Cannot add this building because it has already been replaced."
+    else Add new building
+        CTRL -> BLD : new Building(buildingType)
+        CTRL -> ST : addBuilding(building)
+        CTRL -> SIM : setActualMoney(actualMoney - cost)
+        CTRL --> UI : "Building was successfully added to the station!"
+        deactivate CTRL
+        deactivate UI
+    end
+end
+@enduml

@@ -1,0 +1,88 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Player" as PLY
+participant ":BuyLocomotiveUI" as UI
+participant ":BuyTrainPartController" as CTRL
+participant "Repositories" as REPOS
+participant "repositories\n:Repositories" as REPOS_INST
+participant "locomotiveRepository\n:LocomotiveRepository" as LOC_REP_INST
+participant ":Scenario" as SCENARIO
+participant ":Simulation" as SIMULATION
+participant ":Locomotive" as LOCOMOTIVE
+
+activate PLY
+    PLY -> UI : requests to buy a locomotive
+    activate UI
+    UI -> CTRL : BuyTrainPartController(scenario, simulation)
+    activate CTRL
+
+        group Retrieve Available Locomotives
+            CTRL -> REPOS : getInstance()
+            activate REPOS
+            REPOS --> CTRL : repositories
+            deactivate REPOS
+
+            CTRL -> REPOS_INST : getLocomotiveRepository()
+            activate REPOS_INST
+            REPOS_INST --> CTRL : locomotiveRepository
+            deactivate REPOS_INST
+
+            CTRL -> LOC_REP_INST : getAllLocomotives()
+            activate LOC_REP_INST
+            LOC_REP_INST --> CTRL : allLocomotives
+            deactivate LOC_REP_INST
+
+            CTRL -> SCENARIO : getAvailableLocomotiveList()
+            activate SCENARIO
+                SCENARIO --> CTRL : availableLocomotives
+            deactivate SCENARIO
+
+            CTRL -> SIMULATION : getCurrentTime()
+            activate SIMULATION
+                SIMULATION --> CTRL : currentTime
+            deactivate SIMULATION
+
+            CTRL -> CTRL : filter locomotives by date
+            CTRL --> UI : filteredLocomotives
+        end
+
+        group Select Locomotive
+            UI --> PLY : show available locomotives
+            activate PLY
+            PLY -> UI : select locomotive
+            deactivate PLY
+            UI -> CTRL : buyLocomotive(selectedLocomotive)
+        end
+
+        group Validate Purchase
+            CTRL -> SIMULATION : getActualMoney()
+            activate SIMULATION
+                SIMULATION --> CTRL : actualMoney
+            deactivate SIMULATION
+
+            alt Not enough money
+                CTRL --> UI : "You do not have enough money"
+                UI --> PLY : showError("Not enough money")
+                activate PLY
+                deactivate PLY
+                deactivate CTRL
+                deactivate UI
+                return
+            else Sufficient money
+                CTRL -> SIMULATION : setActualMoney(actualMoney - price)
+                CTRL -> SCENARIO : addBoughtLocomotive(selectedLocomotive)
+                CTRL --> UI : "Locomotive bought successfully"
+                UI --> PLY : showSuccess("Locomotive bought")
+                activate PLY
+                deactivate PLY
+            end
+        end
+
+    deactivate CTRL
+deactivate UI
+deactivate PLY
+@enduml

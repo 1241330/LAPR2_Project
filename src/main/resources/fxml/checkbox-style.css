@@ -1,0 +1,49 @@
+/* ---------- CHECKBOX ESTILO ELEGANTE COM ✓ PREENCHIDO ---------- */
+.check-box {
+    -fx-background-color: transparent;
+}
+
+/* Caixa do CheckBox (24x24) */
+.check-box .box {
+    -fx-background-color: #ece3d4;
+    -fx-border-color: #8C7853;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-min-width: 24px;
+    -fx-min-height: 24px;
+    -fx-max-width: 24px;
+    -fx-max-height: 24px;
+    -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.15), 2, 0.0, 0, 1);
+    -fx-alignment: center;
+}
+
+/* Hover da caixa */
+.check-box:hover .box {
+    -fx-border-color: #b39a6f;
+    -fx-cursor: hand;
+}
+
+/* Selecionado */
+.check-box:selected .box {
+    -fx-background-color: #b39a6f;
+    -fx-border-color: #b39a6f;
+}
+
+/* Marca de seleção com ✓ preenchido */
+.check-box:selected .mark {
+    -fx-background-color: white;
+    -fx-shape: "M4 12 L2 10 L0 12 L4 16 L14 6 L12 4 Z";
+    -fx-scale-shape: false;
+    -fx-padding: 5;
+}
+
+/* Desabilitado */
+.check-box:disabled {
+    -fx-opacity: 0.5;
+}
+
+/* Layout em HBox */
+.hbox > .check-box {
+    -fx-spacing: 8px;
+    -fx-margin: 5px;
+}

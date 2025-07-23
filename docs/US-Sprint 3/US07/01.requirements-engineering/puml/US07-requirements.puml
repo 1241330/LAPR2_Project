@@ -1,0 +1,46 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title System Sequence Diagram (SSD) - US07 - View station details
+
+autonumber
+
+actor Player
+participant ":System" as System
+
+
+activate Player
+Player -> System : Request to list all stations
+activate System
+System -> System : Get singleton Repositories instance
+System -> System : Retrieve MapRepository from Repositories
+System -> System : Retrieve current Map using mapId
+System -> System : Get StationRepository from current Map
+System -> System : Retrieve list of all Stations
+
+alt No stations available
+    System --> Player : Display "No stations found" message
+else Stations available
+    System -> System : Format stations into readable string
+    System --> Player : Display list of all stations
+end
+deactivate System
+
+
+Player -> System : Select a station from the list
+activate System
+System -> System : Retrieve selected Station object
+System -> System : Get Station name, position, type, direction
+System -> System : Get list of associated Buildings
+System -> System : For each building, retrieve its name and type
+System -> System : Get Inventory from Station
+System -> System : Retrieve list of Resources in Inventory
+System -> System : For each resource, get type and quantity
+System -> System : Aggregate and format station details
+System --> Player : Display selected station details
+deactivate System
+deactivate Player
+
+@enduml

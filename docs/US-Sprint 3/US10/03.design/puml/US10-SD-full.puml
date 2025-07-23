@@ -1,0 +1,146 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+autonumber
+
+actor "Player" as PLAYER
+participant ":CreateRouteUI" as UI
+participant ":CreateRouteController" as CTRL
+participant "simulation\n:Simulation" as SIM
+participant "scenario\n:Scenario" as SCN
+participant "map\n:Map" as MAP
+participant "stationRepository\n:StationRepository" as STREP
+participant "railwayLineRepository\n:RailwayLineRepository" as RLREP
+participant "train\n:Train" as TRAIN
+participant "station\n:Station" as STATION
+participant "route\n:Route" as ROUTE
+participant "cargo\n:Cargo" as CARGO
+participant "railwayLine\n:RailwayLine" as RAILWAYLINE
+participant "locomotive\n:Locomotive" as LOC
+participant "industry\n:Industry" as IND
+participant "resourcesType\n:ResourcesType" as RESTYPE
+
+activate PLAYER
+
+PLAYER -> UI : requests assignment of train to route
+activate UI
+    UI -> CTRL : CreateRouteController(simulation, scenario)
+    activate CTRL
+        CTRL --> UI : controller created
+    deactivate CTRL
+
+    UI -> CTRL : getTrainList()
+    activate CTRL
+        CTRL -> SIM : getTrainList()
+        activate SIM
+            SIM --> CTRL : trainList
+        deactivate SIM
+        CTRL --> UI : trainList
+    deactivate CTRL
+
+    UI -> PLAYER : shows list of trains and asks for selection
+    PLAYER -> UI : selects train
+
+    UI -> TRAIN : getLocomotive()
+    activate TRAIN
+        TRAIN -> LOC : getFuelType()
+        activate LOC
+            LOC --> TRAIN : fuelType
+        deactivate LOC
+        TRAIN --> UI : fuelType
+    deactivate TRAIN
+
+    UI -> CTRL : verifyIfStationsHaveLines(fuelType)
+    activate CTRL
+        CTRL -> MAP : getStationList()
+        activate MAP
+            MAP -> STREP : getStations()
+            activate STREP
+                STREP --> MAP : stations
+            deactivate STREP
+            MAP --> CTRL : stationList
+        deactivate MAP
+        loop for each station
+            CTRL -> MAP : getRailwayLines()
+            activate MAP
+                MAP -> RLREP : getAllRailwayLines()
+                activate RLREP
+                    RLREP --> MAP : railwayLineList
+                deactivate RLREP
+                MAP --> CTRL : railwayLineList
+            deactivate MAP
+            CTRL -> CTRL : getRailwayLinesByFuelType(...)
+            CTRL -> CTRL : verifyIfLinesPassesInStation(...)
+        end
+        CTRL --> UI : validStations
+    deactivate CTRL
+
+    UI -> PLAYER : shows valid stations and asks to select the first one
+    PLAYER -> UI : selects first station
+
+    ' Route definition (adding stations)
+    loop add stations
+        UI -> CTRL : availableStationConnections(currentStation, fuelType)
+        activate CTRL
+            CTRL -> MAP : getRailwayLines()
+            activate MAP
+                MAP -> RLREP : getAllRailwayLines()
+                activate RLREP
+                    RLREP --> MAP : railwayLineList
+                deactivate RLREP
+                MAP --> CTRL : railwayLineList
+            deactivate MAP
+            CTRL -> CTRL : getRailwayLinesByFuelType(...)
+            CTRL -> CTRL : verifyIfLinesPassesInStation(...)
+            CTRL --> UI : availableStations
+        deactivate CTRL
+
+        UI -> PLAYER : shows available stations and asks for next
+        PLAYER -> UI : selects next station
+
+        UI -> STATION : getName()
+        activate STATION
+            STATION --> UI : name
+        deactivate STATION
+
+        ' Cargo generation by the industry associated with the station
+        UI -> IND : getStationIdentifier()
+        activate IND
+            IND --> UI : associated station
+            IND -> IND : generate resources
+            IND -> RESTYPE : getName(), getQuantityProduced(), ...
+            activate RESTYPE
+                RESTYPE --> IND : resource properties
+            deactivate RESTYPE
+            IND --> UI : generated resources/cargo
+        deactivate IND
+
+        UI -> PLAYER : shows list of cargo and asks for selection
+        PLAYER -> UI : selects cargo
+
+        UI -> UI : add station and cargo to route
+    end
+
+    UI -> CTRL : createRoute(train, stationList)
+    activate CTRL
+        CTRL -> SIM : getCurrentTime()
+        activate SIM
+            SIM --> CTRL : currentTime
+        deactivate SIM
+        CTRL -> ROUTE : Route(train, stationList, startTime, generatingRate)
+        activate ROUTE
+                ROUTE --> CTRL: route
+        deactivate ROUTE
+        CTRL -> SIM : addRoute(route)
+        activate SIM
+        SIM --> CTRL : route
+        deactivate SIM
+        CTRL --> UI : route created
+    deactivate CTRL
+
+    UI -> PLAYER : shows success
+deactivate UI
+
+deactivate PLAYER
+@enduml
