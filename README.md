@@ -35,7 +35,8 @@
 Project developed for the curricular unit LAPR2 (2024/2025).
 
 This project was developed with the collaboration of the following team:
-- [André Pinho](https://github.com/AndreSiPinho)  
+- [André Pinho](https://github.com/AndreSiPinho)
+- [Bianca Almeida](https://github.com/Brma505)
 - [Carlota Lemos](https://github.com/1241330) 
 - [Eduardo Almeida](https://github.com/EduardoAlmeida-1241418)  
 - [Mara Santos](https://github.com/1241452)
