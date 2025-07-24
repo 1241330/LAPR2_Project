@@ -31,6 +31,15 @@
 - **JUnit** (testing)
 - **PlantUML** (diagrams)
 
+## Credits
+Project developed for the curricular unit LAPR2 (2024/2025).
+
+This project was developed with the collaboration of the following team:
+- [André Pinho](https://github.com/AndreSiPinho)  
+- [Carlota Lemos](https://github.com/1241330) 
+- [Eduardo Almeida](https://github.com/EduardoAlmeida-1241418)  
+- [Mara Santos](https://github.com/1241452)
+
 ## How to Build and Run
 
 1. Ensure you have Java 17+ and Maven installed.
